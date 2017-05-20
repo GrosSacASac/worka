@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>HTML TEMPLATE</title>
+        <link rel="stylesheet" href="css.css">
+        <meta name="viewport" content="width=device-width">
+        <!-- <link rel="icon" href="favicon.png"> -->
+    </head>
+    <body>
+        <!-- put here a header <header></header> -->
+        <main>
+            <p>Compute a result with and without web workers.</p>
+            <div>
+                <h2>Input</h2>
+                <label>
+                    <span>Precision Level</span>
+                    <input
+                        type="number"
+                        min="1"
+                        max="8"
+                        required
+                        placeholder="5"
+                        data-vr="precisionLevel"
+                    >
+                </label>
+                
+                <button
+                    data-fx="tryWithWebWorkerPreloaded"
+                >
+                    With preloaded web worker
+                </button>
+                <button
+                    data-fx="tryWithWebWorker"
+                >
+                    With web worker
+                </button>
+                
+                <button
+                    data-fx="tryWithOutWebWorker"
+                >
+                    Without web worker
+                </button>
+                
+                <button
+                    data-fx="tryWithRemoteServer"
+                >
+                    With remote server
+                </button>
+            </div>
+            
+            <div>
+                <h2>Result</h2>
+                <output
+                    data-vr="result"
+                ></output>
+                <output
+                    data-vr="duration"
+                ></output>
+            </div>
+            
+            <div>
+                <h2>Statistics</h2>
+                <button
+                    data-fx="runFullTestSuite"
+                >
+                    Run full test suite
+                </button>
+                <template data-template="table-row">
+                    <tr>
+                        <td data-vr="precision"></td>
+                        <td data-vr="duration"></td>
+                        <td data-vr="piEstimation"></td>
+                    </tr>
+                </template>
+                <details data-el="testSuiteResults" hidden open>
+                    <summary>It took
+                        <span data-vr="totalTime"></span>ms to run
+                        <span data-vr="sampleSize"></span> times.
+                    </summary>
+                    <dl>
+                        <dt>Total Computation Time</dt>
+                        <dd><span data-vr="totalComputationTime"></span>ms</dd>
+                        <dt>Setup Time</dt>
+                        <dd><span data-vr="setupTime"></span>ms</dd>
+                        <dt>Mean Computation Time</dt>
+                        <dd><span data-vr="meanTime"></span>ms</dd>
+                    </dl>
+                    <table>
+                        <caption>Without Web Worker</caption>
+                        <thead>
+                            <tr>
+                                <th>Precision</th>
+                                <th>Duration (ms)</th>
+                                <th>PI Estimation</th>
+                            </tr>
+                        </thead>
+                        <tbody data-list="results-table-row"></tbody>
+                    </table>
+                </details>
+            </div>
+            
+        </main>
+        <!-- put here a footer <footer></footer> -->
+        <script src="dom99.es5.min.js"></script>
+        <script src="piEstimation.js"></script>
+        <script src="example.js"></script>
+    </body>
+</html>

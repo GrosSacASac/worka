@@ -1,0 +1,48 @@
+
+body {
+  font-family: sans-serif;
+  font-size: 1.1em;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #d8cccb;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+table > caption {
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: 8px;
+}
+
+table > thead > tr,
+table > tbody > tr  {
+  border-bottom: 1px solid #d8cccb;
+}
+
+table > thead > tr > th {
+}
+
+table > thead > tr > th,
+table > tbody > tr > td {
+  padding: 8px;
+  text-align: center;
+}
+
+details > summary {
+  background-color: #f6f4ff;
+  padding: 8px;
+}
+
+details > summary:hover {
+  background-color: #aaa2d8;
+}
+
+details[open] > summary:hover {
+  background-color: #8876b8;
+}
+
