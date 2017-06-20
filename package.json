@@ -1,0 +1,16 @@
+{
+  "name": "worka",
+  "version": "1.0.0",
+  "description": "",
+  "main": "source/worka.js",
+  "module": "module",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js"
+  },
+  "author": "",
+  "license": "ISC"
+}

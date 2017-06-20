@@ -1,185 +1,365 @@
-"use strict";
-const D = dom99;
+/*global
+    
+    estimatePiWorkerCode, estimatePiWorkerJsBlob, estimatePiWorkerURL
+*/
 
-const doNTimes = function (times, task) {
-    let i;
-    for (i = 0; i < times; i += 1) {
-        task();
-    }
-};
 
-const chainPromiseNTimes = function (times, promiseCreator) {
-    return new Promise(function (resolve, reject) {
-        let i = 0;
-        const chainer = function () {
-            if (i < times) {
-                promiseCreator().then(chainer);
-            } else {
-                resolve();
-            }
-            i += 1;
-        };
-        chainer();
-    });
+import { registerWorker, SYMBOLS, work } from "../source/worka.js";
+import D from "./dom99.js";
+import {
+    doNTimes,
+    chainPromises,
+    chainPromiseNTimes,
+    precisionFromPrecisionLevel,
+    getReferenceTime,
+    timeCallback,
+    timePromise,
+    fillArrayWithFunctionResult
+    } from "./utility.js";
+import estimatePi from "./estimatePi.js";
+import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
 
-};
-
+const ESTIMATEPI_RAW_WORKER_URL = "estimatePiWorker.js";
+const ESTIMATEPI_RAW_WORKER_URL_NO_CACHE = "estimatePiWorkerNoCache.js";
+const ESTIMATE_PI_ACTION = "estimatePi";
 const SAMPLE_SIZE = 10;
-const INITIAL_PRECISION_LEVEL = 5;
+const INITIAL_PRECISION_LEVEL = 2 || 5;
 
-const precisionFromPrecisionLevel = function (precisionLevel) {
-    if (!precisionLevel) {
-        return 1000;
-    }
-    return 10 ** precisionLevel;
+let precision = precisionFromPrecisionLevel(INITIAL_PRECISION_LEVEL);
+
+
+registerWorker({
+    name: "getPiEstimation",
+    resource: estimatePi,
+    loadMode: SYMBOLS.FUNCTION
+});
+
+registerWorker({
+    name: "getPiEstimationForceRestart",
+    resource: estimatePi,
+    loadMode: SYMBOLS.FUNCTION,
+    hope: 5
+});
+
+
+
+D.functions.setPrecision = function () {
+    precision = precisionFromPrecisionLevel(Number(D.variables["precisionLevel"]));
 };
-
-const piEstimationWorkerJsCode = `
-const piEstimation  = function (precision) {
-    /* PI Estimation, precision is also limiter by the Number type type precision
-    correctness is affected by the randomness Math.random()*/
-    const radius = 1;
-    let xCoordinate;
-    let yCoordinate;
-    let intermediary;
-    let i;
-    let insideCounter = 0;
     
-    for (i = 0; i < precision; i += 1) {
-        xCoordinate = Math.random();
-        yCoordinate = Math.random();
-        
-        intermediary = (xCoordinate ** 2) + (yCoordinate ** 2)
-        // ** 0.5 is not required because we compare with 1;
-        if (intermediary < radius) {
-            insideCounter += 1;
-        }
-    }
-    return (insideCounter / precision) * 4;
-};
-
-self.addEventListener("message", function(event) {
-    const message = event.data;
-    if (!message.hasOwnProperty("action")) {
-        return;
-    }
-    const action = message.action;
+D.functions.tryWithWebWorkerPreloaded = function () {
+    const startTime = getReferenceTime();
     
-    if (action === "piEstimation") {
-    
-        const precision = message.input;
-        const result = piEstimation(precision);
-        
-        self.postMessage({
-            piEstimationResult: "piEstimationResult",
-            result
-        });
-    }
-
-}, false);`;
-const piEstimationWorkerJsBlob = new Blob([piEstimationWorkerJsCode], { type: "text/javascript" });
-const piEstimationWorkerURL = URL.createObjectURL(piEstimationWorkerJsBlob);
-    
-    
-D.fx.tryWithWebWorkerPreloaded = function () {
-    const startTime = Date.now();
-    const precision = precisionFromPrecisionLevel(Number(D.vr.precisionLevel));
-    
-    
-    
-    const worker = new Worker(piEstimationWorkerURL);
+    const worker = new Worker(estimatePiWorkerURL);
     worker.addEventListener("message", function(event) {
         const message = event.data;
-        if (message.hasOwnProperty("piEstimationResult")) {
-            
+        if (message.hasOwnProperty("result")) {
             const result = message.result;
-            const endTime = Date.now();
+            const endTime = getReferenceTime();
             const duration = endTime - startTime;
-            D.vr.result = `PI estimation: ${result}`;
-            D.vr.duration = `Computation time: ${duration}ms`;
+            D.feed({
+                result: `PI estimation: ${result}`,
+                duration: `Computation time: ${duration}ms`
+            });
             worker.terminate();
         }
 
     });
     //the worker starts with the first postMessage
     worker.postMessage({
-        action: "piEstimation",
+        action: ESTIMATE_PI_ACTION,
         input: precision
     });
 };
-
-
-D.fx.tryWithWebWorker = function () {
-    const startTime = Date.now();
-    const precision = precisionFromPrecisionLevel(Number(D.vr.precisionLevel));
     
-    const worker = new Worker("piEstimationWorker.js");
+D.functions.tryWithWebWorkerNoCache = function () {
+    const startTime = getReferenceTime();
+    
+    const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL_NO_CACHE);
     worker.addEventListener("message", function(event) {
         const message = event.data;
-        if (message.hasOwnProperty("piEstimationResult")) {
+        if (message.hasOwnProperty("result")) {
             
             const result = message.result;
-            const endTime = Date.now();
+            const endTime = getReferenceTime();
             const duration = endTime - startTime;
-            D.vr.result = `PI estimation: ${result}`;
-            D.vr.duration = `Computation time: ${duration}ms`;
+            D.feed({
+                result: `PI estimation: ${result}`,
+                duration: `Computation time: ${duration}ms`
+            });
             worker.terminate();
         }
 
     }, false);
-    //the worker starts with the first postMessage
+    
     worker.postMessage({
-        action: "piEstimation",
+        action: ESTIMATE_PI_ACTION,
         input: precision
     });
 };
 
-D.fx.tryWithOutWebWorker = function () {
-    const startTime = Date.now();
-    const precision = precisionFromPrecisionLevel(Number(D.vr.precisionLevel));
-    const result = piEstimation(precision);
-    const endTime = Date.now();
-    const duration = endTime - startTime;
-    D.vr.result = `PI estimation: ${result}`;
-    D.vr.duration = `Computation time: ${duration}ms`;
+D.functions.tryWithRemoteServer  = function () {
+    timePromise(function () {
+        return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
+            return response.text();
+        }).then(function (resultString) {
+            const result = Number(resultString);
+            return result;
+        });
+    }).then(function ({timeElapsed, value}) {
+        D.feed({
+            result: value,
+            duration: `Computation time: ${timeElapsed}ms`
+        });
+    });
+
 };
 
-D.fx.runFullTestSuite = function () {
-    const precision = precisionFromPrecisionLevel(Number(D.vr.precisionLevel));
-    const results = [];
+
+D.functions.tryWithWebWorker = function () {
+    const startTime = getReferenceTime();
+    
+    const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
+    worker.addEventListener("message", function(event) {
+        const message = event.data;
+        if (message.hasOwnProperty("result")) {
+            
+            const result = message.result;
+            const endTime = getReferenceTime();
+            const duration = endTime - startTime;
+            D.feed({
+                result: `PI estimation: ${result}`,
+                duration: `Computation time: ${duration}ms`
+            });
+            worker.terminate();
+        }
+
+    }, false);
+    
+    worker.postMessage({
+        action: ESTIMATE_PI_ACTION,
+        input: precision
+    });
+};
+
+D.functions.tryWithOutWebWorker = function () {
+    let result;
+    const duration = timeCallback(function () {
+        result = estimatePi(precision);
+    });
+    D.feed({
+        result: `PI estimation: ${result}`,
+        duration: `Computation time: ${duration}ms`
+    });
+};
+
+D.functions.runFullTestSuite = function () {
+
+    chainPromises([
+        testWithoutWorker,
+        testWithRawWorker,
+        testWithWorkerCreatedEveryTime,
+        testWithWorker,
+        testWithWorkerAutoSplit
+    ]).then(function (allResults) {
+        console.log(allResults);
+        D.feed({
+            allResults
+        });
+    });
+        
+};
+
+const addAggregatesStats = function (aggregates) {
+    aggregates.meanTime = aggregates.totalComputationTime / aggregates.sampleSize;
+    aggregates.setupTime = aggregates.totalTime - aggregates.totalComputationTime;
+};
+
+const testWithoutWorker = function () {
     const aggregates = {
+        title: "Without Web Worker",
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
         setupTime: 0,
-        sampleSize: SAMPLE_SIZE
+        sampleSize: SAMPLE_SIZE,
+        results: []
     };
-    const allStartTime = Date.now();
-    doNTimes(SAMPLE_SIZE, function () {
-        const startTime = Date.now();
-        const result = piEstimation(precision);
-        const endTime = Date.now();
-        const duration = endTime - startTime;
-        results.push({
-            precision,
-            duration,
-            piEstimation: result
-        });
-        aggregates.totalComputationTime += duration;
+    
+    aggregates.totalTime = timeCallback(function () {
+        doNTimes(function () {
+            let piEstimation;
+            const duration = timeCallback(function () {
+                piEstimation = estimatePi(precision);
+            });
+            aggregates.results.push({
+                precision,
+                duration,
+                piEstimation
+            });
+            aggregates.totalComputationTime += duration;
+        }, SAMPLE_SIZE);
     });
-    const allEndTime = Date.now();
-    aggregates.totalTime = allEndTime - allStartTime;
-    aggregates.meanTime = aggregates.totalComputationTime / SAMPLE_SIZE;
-    aggregates.setupTime = aggregates.totalTime - aggregates.totalComputationTime;
+    addAggregatesStats(aggregates)
     
-    console.log(results);
-    D.vr.results = results;
-    D.vr = aggregates;
-    D.el.testSuiteResults.hidden = false;
-    
-    chainPromiseNTimes(SAMPLE_SIZE, );
+    return Promise.resolve(aggregates);
 };
 
+
+const testWithRawWorker = function () {
+    const aggregates = {
+        title: "With Raw Web Worker",
+        totalComputationTime: 0,
+        meanTime: 0,
+        totalTime: 0,
+        setupTime: 0,
+        sampleSize: SAMPLE_SIZE,
+        results: []
+    };
+    
+    const rawWorkerWork = function() {
+        return new Promise(function (resolve, reject) {
+            const startTime = getReferenceTime();
+            const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
+            worker.addEventListener("message", function(event) {
+                const message = event.data;
+                if (message.hasOwnProperty("result")) {
+                    const piEstimation = message.result;
+                    const endTime = getReferenceTime();
+                    const duration = endTime - startTime;
+                    
+                    worker.terminate();
+                    aggregates.totalComputationTime += duration;
+                    resolve({
+                        precision,
+                        duration,
+                        piEstimation
+                    });
+                }
+            });
+
+            worker.postMessage({
+                action: ESTIMATE_PI_ACTION,
+                input: precision
+            });
+        });
+    };
+    
+    return timePromise(function () {
+        return chainPromiseNTimes(rawWorkerWork, SAMPLE_SIZE);
+    }).then(function ({timeElapsed, value}) {
+        aggregates.results = value;
+        aggregates.totalTime = timeElapsed;
+        addAggregatesStats(aggregates)
+        return aggregates;
+    });
+};
+
+const testWithWorkerCreatedEveryTime = function () {
+    const aggregates = {
+        title: "With Web Worker Created every time",
+        totalComputationTime: 0,
+        meanTime: 0,
+        totalTime: 0,
+        setupTime: 0,
+        sampleSize: SAMPLE_SIZE,
+        results: []
+    };
+    
+    const workerWork = function() {
+        return timePromise(function() {
+            return work("getPiEstimationForceRestart", precision);
+        }).then(function ({timeElapsed, value}) {
+            aggregates.totalComputationTime += timeElapsed;
+            return {
+                precision,
+                duration: timeElapsed,
+                piEstimation: value
+            };
+        });
+    };
+
+    return timePromise(function () {
+        return chainPromiseNTimes(workerWork, SAMPLE_SIZE);
+    }).then(function ({timeElapsed, value}) {
+        aggregates.results = value;
+        aggregates.totalTime = timeElapsed;
+        addAggregatesStats(aggregates)
+        return aggregates;
+    });
+};
+
+const testWithWorker = function () {
+    const aggregates = {
+        title: "With Web Worker",
+        totalComputationTime: 0,
+        meanTime: 0,
+        totalTime: 0,
+        setupTime: 0,
+        sampleSize: SAMPLE_SIZE,
+        results: []
+    };
+
+    const workerWork = function() {
+        return timePromise(function() {
+            return work("getPiEstimation", precision);
+        }).then(function ({timeElapsed, value}) {
+            aggregates.totalComputationTime += timeElapsed;
+            return {
+                precision,
+                duration: timeElapsed,
+                piEstimation: value
+            };
+        });
+    };
+    
+    return timePromise(function () {
+        return chainPromiseNTimes(workerWork, SAMPLE_SIZE);
+    }).then(function ({timeElapsed, value}) {
+        aggregates.results = value;
+        aggregates.totalTime = timeElapsed;
+        addAggregatesStats(aggregates)
+        return aggregates;
+    });
+};
+
+const testWithWorkerAutoSplit = function () {
+    const aggregates = {
+        title: "With Web Worker auto split",
+        totalComputationTime: 0,
+        meanTime: 0,
+        totalTime: 0,
+        setupTime: 0,
+        sampleSize: SAMPLE_SIZE,
+        results: []
+    };
+
+    const workerWork = function() {
+        return timePromise(function() {
+            return work("getPiEstimation", precision);
+        }).then(function ({timeElapsed, value}) {
+            aggregates.totalComputationTime += timeElapsed;
+            return {
+                precision,
+                duration: timeElapsed,
+                piEstimation: value
+            };
+        });
+    };
+    
+    return timePromise(function () {
+        const allPromises = fillArrayWithFunctionResult(workerWork, SAMPLE_SIZE);
+        return Promise.all(allPromises);
+    }).then(function ({timeElapsed, value}) {
+        aggregates.results = value;
+        aggregates.totalTime = timeElapsed;
+        addAggregatesStats(aggregates)
+        return aggregates;
+    });
+};
+
+D.feed({
+    precisionLevel: INITIAL_PRECISION_LEVEL
+});
 D.linkJsAndDom();
 
-D.vr.precisionLevel = INITIAL_PRECISION_LEVEL;

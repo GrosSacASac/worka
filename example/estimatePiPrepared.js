@@ -1,5 +1,8 @@
+"use strict";
 
-const piEstimation  = function (precision) {
+/*copy from estimatePi.js*/
+const estimatePiWorkerCode = `
+const estimatePi  = function (precision) {
     /* PI Estimation, precision is also limiter by the Number type type precision
     correctness is affected by the randomness Math.random()*/
     const radius = 1;
@@ -29,16 +32,17 @@ self.addEventListener("message", function(event) {
     }
     const action = message.action;
     
-    if (action === "piEstimation") {
+    if (action === "estimatePi") {
     
         const precision = message.input;
-        const result = piEstimation(precision);
+        const result = estimatePi(precision);
         
         self.postMessage({
-            piEstimationResult: "piEstimationResult",
             result
         });
     }
 
-}, false);
+});`;
 
+const estimatePiWorkerJsBlob = new Blob([estimatePiWorkerCode], { type: "text/javascript" });
+export const estimatePiWorkerURL = URL.createObjectURL(estimatePiWorkerJsBlob);

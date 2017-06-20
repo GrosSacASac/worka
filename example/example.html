@@ -11,6 +11,7 @@
         <!-- put here a header <header></header> -->
         <main>
             <p>Compute a result with and without web workers.</p>
+            <a href="">link to github</a>
             <div>
                 <h2>Input</h2>
                 <label>
@@ -19,31 +20,39 @@
                         type="number"
                         min="1"
                         max="8"
+                        step="1"
                         required
                         placeholder="5"
-                        data-vr="precisionLevel"
+                        data-variable="precisionLevel"
+                        data-function="setPrecision"
                     >
                 </label>
                 
                 <button
-                    data-fx="tryWithWebWorkerPreloaded"
+                    data-function="tryWithWebWorkerPreloaded"
                 >
                     With preloaded web worker
                 </button>
                 <button
-                    data-fx="tryWithWebWorker"
+                    data-function="tryWithWebWorker"
                 >
                     With web worker
                 </button>
                 
                 <button
-                    data-fx="tryWithOutWebWorker"
+                    data-function="tryWithWebWorkerNoCache"
+                >
+                    With web worker, without cache
+                </button>
+                
+                <button
+                    data-function="tryWithOutWebWorker"
                 >
                     Without web worker
                 </button>
                 
                 <button
-                    data-fx="tryWithRemoteServer"
+                    data-function="tryWithRemoteServer"
                 >
                     With remote server
                 </button>
@@ -52,58 +61,61 @@
             <div>
                 <h2>Result</h2>
                 <output
-                    data-vr="result"
+                    data-variable="result"
                 ></output>
                 <output
-                    data-vr="duration"
+                    data-variable="duration"
                 ></output>
             </div>
             
             <div>
                 <h2>Statistics</h2>
                 <button
-                    data-fx="runFullTestSuite"
+                    data-function="runFullTestSuite"
                 >
                     Run full test suite
                 </button>
                 <template data-template="table-row">
                     <tr>
-                        <td data-vr="precision"></td>
-                        <td data-vr="duration"></td>
-                        <td data-vr="piEstimation"></td>
+                        <td data-variable="precision"></td>
+                        <td data-variable="duration"></td>
+                        <td data-variable="piEstimation"></td>
                     </tr>
                 </template>
-                <details data-el="testSuiteResults" hidden open>
-                    <summary>It took
-                        <span data-vr="totalTime"></span>ms to run
-                        <span data-vr="sampleSize"></span> times.
-                    </summary>
-                    <dl>
-                        <dt>Total Computation Time</dt>
-                        <dd><span data-vr="totalComputationTime"></span>ms</dd>
-                        <dt>Setup Time</dt>
-                        <dd><span data-vr="setupTime"></span>ms</dd>
-                        <dt>Mean Computation Time</dt>
-                        <dd><span data-vr="meanTime"></span>ms</dd>
-                    </dl>
-                    <table>
-                        <caption>Without Web Worker</caption>
-                        <thead>
-                            <tr>
-                                <th>Precision</th>
-                                <th>Duration (ms)</th>
-                                <th>PI Estimation</th>
-                            </tr>
-                        </thead>
-                        <tbody data-list="results-table-row"></tbody>
-                    </table>
-                </details>
+                <template data-template="test-category">
+                    <details data-element="testSuiteResults" >
+                        <summary>
+                            <span data-variable="title"></span>
+                            It took
+                            <span data-variable="totalTime"></span>ms to run
+                            <span data-variable="sampleSize"></span> times.
+                        </summary>
+                        <dl>
+                            <dt>Total Computation Time</dt>
+                            <dd><span data-variable="totalComputationTime"></span>ms</dd>
+                            <dt>Setup Time</dt>
+                            <dd><span data-variable="setupTime"></span>ms</dd>
+                            <dt>Mean Computation Time</dt>
+                            <dd><span data-variable="meanTime"></span>ms</dd>
+                        </dl>
+                        <table>
+                            <caption data-variable="title"></caption>
+                            <thead>
+                                <tr>
+                                    <th>Precision</th>
+                                    <th>Duration (ms)</th>
+                                    <th>PI Estimation</th>
+                                </tr>
+                            </thead>
+                            <tbody data-list="results-table-row"></tbody>
+                        </table>
+                    </details>
+                </template>
+                <div data-list="allResults-test-category"></div>
             </div>
             
         </main>
         <!-- put here a footer <footer></footer> -->
-        <script src="dom99.es5.min.js"></script>
-        <script src="piEstimation.js"></script>
-        <script src="example.js"></script>
+        <script src="example.js" type="module"></script>
     </body>
 </html>
