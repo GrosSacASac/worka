@@ -3,7 +3,7 @@
 
 ## Why
 
-Make lifer easier. Working with Web Workers is cool, I can do all sorts, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. Avoiding duplication is a good thing, I was told.
+Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoiding duplication.
 
 
 ## What
@@ -14,6 +14,7 @@ Abstraction layer on top of web worker, with declarative life cycle. Encapsulati
  * Worker auto split into more worker
  * Time out management
  * Opt in statefull worker
+ * Lifecycle management
 
 
 ## How
@@ -21,12 +22,45 @@ Abstraction layer on top of web worker, with declarative life cycle. Encapsulati
 With a script to be imported. [worka.js](./source/worka.js)
 
 
-### Short Example
+## Inspiration
+
+Inspired by the clean stateless HTTP architecture, something comes in, something comes out. Below is an example where you can even race with the network.
+
+
+### Short Example (source/worka.html)
 
 
 ```
-import { registerWorker, SYMBOLS, work } from "../source/worka.js";
-TODO
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <p>Open console</p>
+        <script type="module">
+import { registerWorker, SYMBOLS, work } from "./worka.js";       
+
+const sort = function (array) {
+    array.sort();
+    return array;
+};
+ 
+registerWorker({
+    name: "sort",
+    resource: sort,
+    loadMode: SYMBOLS.FUNCTION
+});
+
+work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+    console.log(result);
+});
+
+    </script>
+    </body>
+</html>
+
 ```
 
 
@@ -35,7 +69,7 @@ TODO
 
 Inside web worker: https://nolanlawson.github.io/html5workertest/ .
 
-The functions must be synchronous.
+The functions must be synchronous. Only available as ES module for now. Requires full ES2015 and more support. Requires ES Promises.
 
 Does not support
 
@@ -44,7 +78,7 @@ Does not support
 
 ## Install
 
-Download `work.js`
+Download `source/worka.js`
 
 
 
@@ -52,14 +86,15 @@ Download `work.js`
 
  * [work](#work)
  * [registerWorker](#registerWorker)
- * [SYMBOLS](#SYMBOLS)
+ * [SYMBOLS](#symbols)
 
+ 
 ### work
 
 `work(name, input);`
 
 
-Returns a promise that eventually resolves with the result or fails.
+Returns a promise that eventually resolves with the result or fails. Use registerWorker first !
 
 
 ```
@@ -89,7 +124,7 @@ the name of the worker or `${name}/${functionName}`.
 The input that will be provided to the worker. To pass multiple inputs use a container, such as an Array or an Object.
 
 
-### .registerWorker
+### registerWorker
 
 `registerWorker(options);`
 
@@ -463,7 +498,7 @@ Memoize is not included by default for maximum flexibility. It is possible to me
 ```
 // imports
 const promiseMemoize = require("promise-memoize");
-const { registerWorker, work, SYMBOLS} = require("work");
+const { registerWorker, work, SYMBOLS} = require("worka"); // require not supported yet
 
 
 // register worker
@@ -492,9 +527,19 @@ const memoizedWork = promiseMemoize(work);
 ## Alternatives
 
  * https://github.com/andywer/threads.js
+     * Also works for NodeJS
+     * Also for non ES6
+     * Transferrables
+     * More complex
  * https://github.com/padolsey/operative
+     * Falls back to using iframes
+     * high range of browser support
+     * Promise or callback based
  * https://github.com/nolanlawson/promise-worker
+     * Small
+     * Also promised based
  * raw web worker
+     * More freedom but might have to reinvent patterns discovered here
 
 
 

@@ -2,14 +2,15 @@
   "name": "worka",
   "version": "1.0.0",
   "description": "",
-  "main": "source/worka.js",
-  "module": "module",
+  "main": "built/worka_script.js",
+  "module": "source/worka.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "rollup": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js"
+    "buildExample": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js",
+    "buildBrowser": "rollup source/worka.js --format iife --output built/worka_script.js"
   },
   "author": "",
   "license": "ISC"

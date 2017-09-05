@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <p>Open console</p>
+        <script type="module">
+import { registerWorker, SYMBOLS, work } from "./worka.js";       
+
+const sort = function (array) {
+    array.sort();
+    return array;
+};
+ 
+registerWorker({
+    name: "sort",
+    resource: sort,
+    loadMode: SYMBOLS.FUNCTION
+});
+
+work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+    console.log(result);
+});
+
+    </script>
+    </body>
+</html>
