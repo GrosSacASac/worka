@@ -10,7 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "buildExample": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js",
-    "buildBrowser": "rollup source/worka.js --format iife --output built/worka_script.js"
+    "try": "node example/index.js 8080",
+    "buildBrowser": "rollup source/worka.js --output.format iife --output.file built/worka_script.js"
   },
   "author": "",
   "license": "ISC"
