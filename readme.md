@@ -3,7 +3,7 @@
 
 ## Why
 
-Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoiding duplication.
+Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoid duplication.
 
 
 ## What
