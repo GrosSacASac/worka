@@ -1,5 +1,7 @@
 "use strict";
 
+const ARTIFICIAL_DELAY = 50; // ms
+const EXPLANATION = "using artificial delay to simulate real network: " + ARTIFICIAL_DELAY + "ms";
 const express = require('express')
 const estimatePi = require("./estimatePiNode.js");
 
@@ -32,22 +34,34 @@ app.get('/estimatePi', function (req, res) {
     } else {
         stringToSend = String(Math.PI);
     }
-    // console.log(stringToSend);
-    res.end(stringToSend);
+    console.log(EXPLANATION);
+    setTimeout(function () {
+        res.end(stringToSend);
+    }, ARTIFICIAL_DELAY);
 
 });
 
 app.get('/example/estimatePiWorkerNoCache.js', function (req, res) {
     // force no cache, to get an idea how much it is helping
-    res.sendFile(`${__dirname}/estimatePiWorker.js`, {
-        lastModified: false,
-        cacheControl: false,
-        etag: false
-    });
+    console.log(EXPLANATION);
+    setTimeout(function () {
+        res.sendFile(`${__dirname}/estimatePiWorker.js`, {
+            lastModified: false,
+            cacheControl: false,
+            etag: false
+        });
+    }, ARTIFICIAL_DELAY);
+    
 
 });
 app.get('/example/estimatePiWorker.js', function (req, res) {
-    console.log("estimatePiWorker.js from network ")
+    console.log("estimatePiWorker.js from network ");
+    console.log(EXPLANATION);
+    setTimeout(function () {
+        res.sendFile(`${__dirname}/estimatePiWorker.js`, {
+            maxAge: 120000
+        });
+    }, ARTIFICIAL_DELAY);
     res.sendFile(`${__dirname}/estimatePiWorker.js`, {
         maxAge: 120000
     });

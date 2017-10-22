@@ -5,7 +5,7 @@
 
 
 import { registerWorker, SYMBOLS, work } from "../source/worka.js";
-import D from "./dom99.js";
+import d from "./node_modules/dom99/built/dom99Module.js";
 import {
     doNTimes,
     chainPromises,
@@ -43,11 +43,11 @@ registerWorker({
 
 
 
-D.functions.setPrecision = function () {
-    precision = precisionFromPrecisionLevel(Number(D.variables["precisionLevel"]));
+d.functions.setPrecision = function () {
+    precision = precisionFromPrecisionLevel(Number(d.variables["precisionLevel"]));
 };
     
-D.functions.tryWithWebWorkerPreloaded = function () {
+d.functions.tryWithWebWorkerPreloaded = function () {
     const startTime = getReferenceTime();
     
     const worker = new Worker(estimatePiWorkerURL);
@@ -57,7 +57,7 @@ D.functions.tryWithWebWorkerPreloaded = function () {
             const result = message.result;
             const endTime = getReferenceTime();
             const duration = endTime - startTime;
-            D.feed({
+            d.feed({
                 result: `PI estimation: ${result}`,
                 duration: `Computation time: ${duration}ms`
             });
@@ -72,7 +72,7 @@ D.functions.tryWithWebWorkerPreloaded = function () {
     });
 };
     
-D.functions.tryWithWebWorkerNoCache = function () {
+d.functions.tryWithWebWorkerNoCache = function () {
     const startTime = getReferenceTime();
     
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL_NO_CACHE);
@@ -83,7 +83,7 @@ D.functions.tryWithWebWorkerNoCache = function () {
             const result = message.result;
             const endTime = getReferenceTime();
             const duration = endTime - startTime;
-            D.feed({
+            d.feed({
                 result: `PI estimation: ${result}`,
                 duration: `Computation time: ${duration}ms`
             });
@@ -98,7 +98,7 @@ D.functions.tryWithWebWorkerNoCache = function () {
     });
 };
 
-D.functions.tryWithRemoteServer  = function () {
+d.functions.tryWithRemoteServer  = function () {
     timePromise(function () {
         return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
             return response.text();
@@ -107,7 +107,7 @@ D.functions.tryWithRemoteServer  = function () {
             return result;
         });
     }).then(function ({timeElapsed, value}) {
-        D.feed({
+        d.feed({
             result: value,
             duration: `Computation time: ${timeElapsed}ms`
         });
@@ -116,7 +116,7 @@ D.functions.tryWithRemoteServer  = function () {
 };
 
 
-D.functions.tryWithWebWorker = function () {
+d.functions.tryWithWebWorker = function () {
     const startTime = getReferenceTime();
     
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
@@ -127,7 +127,7 @@ D.functions.tryWithWebWorker = function () {
             const result = message.result;
             const endTime = getReferenceTime();
             const duration = endTime - startTime;
-            D.feed({
+            d.feed({
                 result: `PI estimation: ${result}`,
                 duration: `Computation time: ${duration}ms`
             });
@@ -142,18 +142,18 @@ D.functions.tryWithWebWorker = function () {
     });
 };
 
-D.functions.tryWithOutWebWorker = function () {
+d.functions.tryWithOutWebWorker = function () {
     let result;
     const duration = timeCallback(function () {
         result = estimatePi(precision);
     });
-    D.feed({
+    d.feed({
         result: `PI estimation: ${result}`,
         duration: `Computation time: ${duration}ms`
     });
 };
 
-D.functions.runFullTestSuite = function () {
+d.functions.runFullTestSuite = function () {
 
     chainPromises([
         testWithoutWorker,
@@ -163,7 +163,7 @@ D.functions.runFullTestSuite = function () {
         testWithWorkerAutoSplit
     ]).then(function (allResults) {
         console.log(allResults);
-        D.feed({
+        d.feed({
             allResults
         });
     });
@@ -358,8 +358,8 @@ const testWithWorkerAutoSplit = function () {
     });
 };
 
-D.feed({
+d.feed({
     precisionLevel: INITIAL_PRECISION_LEVEL
 });
-D.linkJsAndDom();
+d.linkJsAndDom();
 

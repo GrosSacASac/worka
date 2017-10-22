@@ -557,7 +557,31 @@ const memoizedWork = promiseMemoize(work);
 
 ## About this package
 
+### Some tests
 
+Look at the /example folder
+
+Steps with npm cli:
+
+ * cd example
+ * npm install
+ * cd ..
+ * node example/index.js
+ * open http://localhost:3000/example/example.html
+  
+There you can compare 
+
+ * With preloaded web worker
+ * With web worker
+ * With web worker, without cache 
+ * Without web worker
+ * With remote server
+ 
+The results can vary alot and depends, on network condition, ability to run the software in
+parallel (often in %), setup time/work time,
+
+Feel free to open issue to know more.
+ 
 ### The name
 
 "worka" was chosen to keep it short and "worker" was already taken.
@@ -565,5 +589,5 @@ const memoizedWork = promiseMemoize(work);
 
 ### License
 
-todo
- 
+
+[Boost License](./LICENSE.txt)
