@@ -14,5 +14,5 @@
     "buildBrowser": "rollup source/worka.js --output.format iife --output.file built/worka_script.js"
   },
   "author": "",
-  "license": "BSL-1.0",
+  "license": "BSL-1.0"
 }
