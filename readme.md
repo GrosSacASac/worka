@@ -553,7 +553,7 @@ const memoizedWork = promiseMemoize(work);
  * es5, script, and old browser support
  * provide a version that works out of the box with all Polyfills
  * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
-
+ * Test and document limitations more, how many worker can be created and alive at the same time ?
 
 ## About this package
 
