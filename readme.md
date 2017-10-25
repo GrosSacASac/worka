@@ -40,13 +40,13 @@ Inspired by the clean stateless HTTP architecture, something comes in, something
     <body>
         <p>Open console</p>
         <script type="module">
-import { registerWorker, SYMBOLS, work } from "./worka.js";       
+import { registerWorker, SYMBOLS, work } from "./worka.js";
 
 const sort = function (array) {
     array.sort();
     return array;
 };
- 
+
 registerWorker({
     name: "sort",
     resource: sort,
@@ -88,7 +88,7 @@ Download `source/worka.js`
  * [registerWorker](#registerWorker)
  * [SYMBOLS](#symbols)
 
- 
+
 ### work
 
 `work(name, input);`
@@ -191,12 +191,12 @@ const returnsMultipleFunctions = function () {
         array.sort();
         return array;
     };
-    
+
     const addNegativeLength = function (array) {
         array.push(-array.length);
         return array;
     };
-    
+
     return {
         sort,
         addNegativeLength
@@ -230,8 +230,8 @@ Partial Default
 }
 ```
 
- 
-Pure functions are stateless. Function that change variables other than the return value are statefull (Worker that do not use transferable, have a copy of the input, not the input itself, which means a top level function inside a worker can change the __copied__ input and still be pure). Statefull component will never auto split into multiple workers. Before using statefull workers everywhere, consider moving the state up; moving the state in the main thread, mutate it only there, and providing it to the worker each time alongside the regular input. There is no need to set `initialize`. To provide a statefull function use `stateless: false` and the following format: 
+
+Pure functions are stateless. Function that change variables other than the return value are statefull (Worker that do not use transferable, have a copy of the input, not the input itself, which means a top level function inside a worker can change the __copied__ input and still be pure). Statefull component will never auto split into multiple workers. Before using statefull workers everywhere, consider moving the state up; moving the state in the main thread, mutate it only there, and providing it to the worker each time alongside the regular input. There is no need to set `initialize`. To provide a statefull function use `stateless: false` and the following format:
 
 
 ```
@@ -283,7 +283,7 @@ Partial Default
 ```
 
 const functionContainer = function () {
-    
+
     const largeConstantInitialization = ["could be a long array",
         "or something that would be costly to create each time"];
     let recursiveFunction;
@@ -552,7 +552,7 @@ const memoizedWork = promiseMemoize(work);
  * optimization
  * es5, script, and old browser support
  * provide a version that works out of the box with all Polyfills
- * Opt in for transferable
+ * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
 
 
 ## About this package
@@ -568,20 +568,20 @@ Steps with npm cli:
  * cd ..
  * node example/index.js
  * open http://localhost:3000/example/example.html
-  
-There you can compare 
+
+There you can compare
 
  * With preloaded web worker
  * With web worker
- * With web worker, without cache 
+ * With web worker, without cache
  * Without web worker
  * With remote server
- 
+
 The results can vary alot and depends, on network condition, ability to run the software in
 parallel (often in %), setup time/work time,
 
 Feel free to open issue to know more.
- 
+
 ### The name
 
 "worka" was chosen to keep it short and "worker" was already taken.
