@@ -566,8 +566,8 @@ Steps with npm cli:
  * cd example
  * npm install
  * cd ..
- * node example/index.js
- * open http://localhost:3000/example/example.html
+ * node example/index.js 8080
+ * open http://localhost:8080/example/example.html
 
 There you can compare
 

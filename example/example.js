@@ -10,12 +10,10 @@ import {
     doNTimes,
     chainPromises,
     chainPromiseNTimes,
-    precisionFromPrecisionLevel,
-    getReferenceTime,
     timeCallback,
     timePromise,
     fillArrayWithFunctionResult
-    } from "./utility.js";
+    } from "./node_modules/utilsac/utility.js";
 import estimatePi from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
 
@@ -24,6 +22,18 @@ const ESTIMATEPI_RAW_WORKER_URL_NO_CACHE = "estimatePiWorkerNoCache.js";
 const ESTIMATE_PI_ACTION = "estimatePi";
 const SAMPLE_SIZE = 10;
 const INITIAL_PRECISION_LEVEL = 2 || 5;
+
+const getReferenceTime = function () {
+    // return Date.now();
+    return performance.now(); // can be more precise
+};
+
+const precisionFromPrecisionLevel = function (precisionLevel) {
+    if (!precisionLevel) {
+        return 1000;
+    }
+    return 10 ** precisionLevel;
+};
 
 let precision = precisionFromPrecisionLevel(INITIAL_PRECISION_LEVEL);
 

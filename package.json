@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "built/worka_script.js",
   "module": "source/worka.js",
