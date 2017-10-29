@@ -1,7 +1,7 @@
 {
   "name": "worka",
-  "version": "2.0.2",
-  "description": "",
+  "version": "2.0.3",
+  "description": "Easy web workers",
   "main": "built/worka_script.js",
   "module": "source/worka.js",
   "directories": {
@@ -13,6 +13,10 @@
     "try": "node example/index.js 8080",
     "buildBrowser": "rollup source/worka.js --output.format iife --output.file built/worka_script.js"
   },
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/GrosSacASac/worka.git"
+  },
+  "author": "GrosSacASacs",
   "license": "BSL-1.0"
 }
