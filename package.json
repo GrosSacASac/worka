@@ -1,8 +1,8 @@
 {
   "name": "worka",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Easy web workers",
-  "main": "built/worka_script.js",
+  "main": "",
   "module": "source/worka.js",
   "directories": {
     "example": "example"
