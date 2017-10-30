@@ -19,7 +19,7 @@ Abstraction layer on top of web worker, with declarative life cycle. Encapsulati
 
 ## How
 
-With a script to be imported. [worka.js](./source/worka.js)
+With a script to be imported. [worka.js](./source/worka.js) Also available on [NPM](https://www.npmjs.com/package/worka). `npm install worka`
 
 
 ## Inspiration
@@ -27,7 +27,7 @@ With a script to be imported. [worka.js](./source/worka.js)
 Inspired by the clean stateless HTTP architecture, something comes in, something comes out. Below is an example where you can even race with the network.
 
 
-### Short Example (source/worka.html)
+### Shortest Example
 
 
 ```
