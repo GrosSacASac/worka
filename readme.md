@@ -11,15 +11,15 @@ Make lifer easier. Working with Web Workers is cool, it makes things previously 
 Abstraction layer on top of web worker, with declarative life cycle. Encapsulation of useful patterns. Some features:
 
  * Promised based API
- * Worker auto split into more worker
+ * Worker auto split into more workers
  * Time out management
  * Opt in statefull worker
- * Lifecycle management
+ * Worker Life-cycle management
 
 
-## How
+## How/Install
 
-With a script to be imported. [worka.js](./source/worka.js) Also available on [NPM](https://www.npmjs.com/package/worka). `npm install worka`
+With a module to be imported. [source/worka.js](./source/worka.js). Also available via [NPM](https://www.npmjs.com/package/worka). `npm install worka`
 
 
 ## Inspiration
@@ -74,11 +74,6 @@ The functions must be synchronous. Only available as ES module for now. Requires
 Does not support
 
  * Transferable objects
-
-
-## Install
-
-Download `source/worka.js`
 
 
 

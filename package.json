@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Easy web workers",
   "main": "",
   "module": "source/worka.js",
