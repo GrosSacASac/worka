@@ -9,9 +9,9 @@
   "author": "author",
   "license": "ISC",
   "dependencies": {
-    "dom99": "^7.2.13",
+    "dom99": "^7.2.19",
     "express": "^4.16.2",
     "promise-memoize": "^1.2.1",
-    "utilsac": "^3.0.1"
+    "utilsac": "^3.0.2"
   }
 }
