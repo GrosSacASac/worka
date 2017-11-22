@@ -3,17 +3,21 @@
 
 ## Why
 
-Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoid duplication.
+Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoid duplication. Use cases of web workers:
 
+ * Offload work (computations) from server to client
+ * Avoid blocking the main-DOM thread
+ * Audio, video, canvas background processing
+ * Progressive Enhancement
+ 
 
 ## What
 
-Abstraction layer on top of web worker, with declarative life cycle. Encapsulation of useful patterns. Some features:
+worka.js is an abstraction layer on top of web worker, with a declarative life cycle. Encapsulation of useful patterns. Some features:
 
  * Promised based API
  * Worker auto split into more workers
  * Time out management
- * Opt in statefull worker
  * Worker Life-cycle management
 
 
@@ -24,7 +28,7 @@ With a module to be imported. [source/worka.js](./source/worka.js). Also availab
 
 ## Inspiration
 
-Inspired by the clean stateless HTTP architecture, something comes in, something comes out. Below is an example where you can even race with the network.
+Inspired by the clean stateless HTTP architecture, something comes in, something comes out.
 
 
 ### Shortest Example
@@ -54,6 +58,7 @@ registerWorker({
 });
 
 work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+    // result is a copy
     console.log(result);
 });
 
@@ -67,13 +72,7 @@ work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
 ## Limitations
 
 
-Inside web worker: https://nolanlawson.github.io/html5workertest/ .
-
-The functions must be synchronous. Only available as ES module for now. Requires full ES2015 and more support. Requires ES Promises.
-
-Does not support
-
- * Transferable objects
+The state, variables and closures are not shared between DOM globals and Web Worker globals. All required inputs must be sent directly. Web Worker cannot directly touch the [DOM/HTML and some other things also](https://nolanlawson.github.io/html5workertest/).
 
 
 
@@ -538,20 +537,24 @@ const memoizedWork = promiseMemoize(work);
 
 
 
-## To Do
-
-
- * expose decorate to compile time
- * allow asynchronous function execution
- * report progress system design
- * optimization
- * es5, script, and old browser support
- * provide a version that works out of the box with all Polyfills
- * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
- * Test and document limitations more, how many worker can be created and alive at the same time ?
-
 ## About this package
 
+### Contributions
+
+Contributions welcome :)
+
+### To Do
+
+
+ * add keywords in package.json and topics (github)
+ * expose decorate to compile time
+ * allow asynchronous function execution
+ * report progress system design (streams ?)
+ * es5, script, and old browser support
+ * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
+ * Test and document limitations more, how many worker can be created and alive at the same time ?
+ * Allow asynchronous functions
+ 
 ### Some tests
 
 Look at the /example folder
