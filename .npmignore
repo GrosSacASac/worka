@@ -1,0 +1,8 @@
+#npm only ignores
+example/
+
+# to get these files copy from github
+pivatenoten.txt
+node_modules/
+readme-draft.de.md
+webspree_session.json

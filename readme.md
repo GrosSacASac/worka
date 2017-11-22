@@ -582,6 +582,13 @@ Feel free to open issue to know more.
 "worka" was chosen to keep it short and "worker" was already taken.
 
 
+### Updates
+
+#### 2.0.6
+
+add `.npmignore` for light npm install
+
+
 ### License
 
 
