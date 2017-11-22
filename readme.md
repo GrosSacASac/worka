@@ -3,7 +3,7 @@
 
 ## Why
 
-Make lifer easier. Working with Web Workers is cool, it makes things previously only available to native apps possible on the web also. Multi threading is hard to get right, and that's why I use patterns to stay correct. Many patterns are duplicated across different applications. These patterns are now internalized into a library to avoid duplication. Use cases of web workers:
+Working with Web Workers is interesting because it makes things previously only available to native software possible on the web also. But multi threading is hard to get right, and that's why I use patterns to stay correct. These patterns were previously duplicated across different web-applications. These patterns are now encapsulated into a library (worka) to avoid duplication. Use cases of web workers:
 
  * Offload work (computations) from server to client
  * Avoid blocking the main-DOM thread
@@ -19,6 +19,7 @@ worka.js is an abstraction layer on top of web worker, with a declarative life c
  * Worker auto split into more workers
  * Time out management
  * Worker Life-cycle management
+ * Small file and zero dependencies
 
 
 ## How/Install
