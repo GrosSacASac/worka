@@ -11,7 +11,9 @@ could change workerWithLowestResolutionQueue, instead of guessing what worker wi
 we could wait for the next worker to become idle, could be better than guessing,
 especially for function that have variability in time needed for execution
 
-proper unregistration for failures ?
+proper de-registration for failures ?
+
+
 */
 /*jslint
     es6, maxerr: 50, browser, devel, fudge, maxlen: 100
@@ -24,12 +26,25 @@ proper unregistration for failures ?
 export {registerWorker, work , workerSupport, SYMBOLS};
 
 const workerSupport = {
-    basic: Boolean(window.Worker),
     // alternative
     // https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js
-    // transfer: undefined,
+    basic: Boolean(window.Worker),
+    transferrables: undefined
     // encapsulation: undefined // Worker inside Worker
 };
+
+// transferrables feature detection
+// a priori not supported in IE 10, 11
+/*
+const smallArrayBuffer = new ArrayBuffer(1);
+const emptyWorker = new Worker("../empty-worker.js"); 
+
+emptyWorker.postMessage(smallArrayBuffer, [smallArrayBuffer]);
+
+// length must be set to 0 in this context
+workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
+
+*/
 
 const workers = {};
 

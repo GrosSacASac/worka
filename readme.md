@@ -82,41 +82,8 @@ The state, variables and closures are not shared between DOM globals and Web Wor
  * [work](#work)
  * [registerWorker](#registerWorker)
  * [SYMBOLS](#symbols)
+ * [workerSupport](#workerSupport)
 
-
-### work
-
-`work(name, input);`
-
-
-Returns a promise that eventually resolves with the result or fails. Use registerWorker first !
-
-
-```
-work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
-    console.log(result);
-}).catch(function (reason) {
-    if (reason === SYMBOLS.NO_SUPPORT_ERROR) {
-        console.log("Web Worker API not supported");
-    } else if (reason === SYMBOLS.TIME_OUT_ERROR) {
-        // can only happen with a worker registered with a timeOut
-        console.log("Took longer than expected");
-    } else {
-        console.log("Error:", reason);
-    }
-});
-```
-
-#### name (required)
-
-
-the name of the worker or `${name}/${functionName}`.
-
-
-#### input
-
-
-The input that will be provided to the worker. To pass multiple inputs use a container, such as an Array or an Object.
 
 
 ### registerWorker
@@ -156,8 +123,9 @@ Describes the worker. Example:
 
 #### resource (required)
 
+`String` or `Function` or `Any`
 
-Any value that can help build the worker. Must be in sync with `loadMode`.
+Any value that can help build the worker. Must be in sync with `loadMode`. For example if loadMode is set to load a function, provide a function as resource. Resource gives the core functionality of the worker.
 
 
 #### loadMode (required)
@@ -213,7 +181,7 @@ work("test/addNegativeLength", [1,2,3,-845,5]).then(function (result) {
 ```
 
 
-#### Statefull and Stateless
+#### Stateless
 
 
 Partial Default
@@ -409,10 +377,57 @@ Partial Default
 ```
 
 
+### work
+
+`work(name, input);`
+
+
+Returns a promise that eventually resolves with the result or fails. Use registerWorker first !
+
+
+```
+work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
+    console.log(result);
+}).catch(function (reason) {
+    if (reason === SYMBOLS.NO_SUPPORT_ERROR) {
+        console.log("Web Worker API not supported");
+    } else if (reason === SYMBOLS.TIME_OUT_ERROR) {
+        // can only happen with a worker registered with a timeOut
+        console.log("Took longer than expected");
+    } else {
+        console.log("Error:", reason);
+    }
+});
+```
+
+#### name (required)
+
+
+the name of the worker or `${name}/${functionName}`.
+
+
+#### input
+
+
+The input that will be provided to the worker. To pass multiple inputs use a container, such as an Array or an Object.
+
+
 ### SYMBOLS
 
 
-Object containing constant values used at various places for strict equality comparisons.
+*Read-only* Object containing constant values used at various places for strict equality comparisons.
+
+
+### workerSupport
+
+*Read-only*  Object describing the support matrix for web workers.
+
+```
+{   
+    basic: Boolean
+    transferrables: undefined // for now
+}
+```
 
 
 ## Advanced topics
