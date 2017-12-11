@@ -79,10 +79,10 @@ The state, variables and closures are not shared between DOM globals and Web Wor
 
 ## API
 
- * [work](#work)
  * [registerWorker](#registerWorker)
+ * [work](#work)
  * [SYMBOLS](#symbols)
- * [workerSupport](#workerSupport)
+ * [workerSupport](#workersupport)
 
 
 
@@ -180,6 +180,8 @@ work("test/addNegativeLength", [1,2,3,-845,5]).then(function (result) {
 });
 ```
 
+The rest of the options are optional. Jump to [work](#work).
+
 
 #### Stateless
 
@@ -231,7 +233,7 @@ work("stateTest", 5).then(function (result) {
 #### initialize
 
 
-To force an initial initialization phase, use `initialize: true` and use the delayed initialization pattern. This is especially useful to create large constant values once only or use recursive functionality.
+To force an initialization phase, use `initialize: true` and use the delayed initialization pattern: Provide a function that returns a function that will run on each `work` and that closes over variables defined once. This is especially useful to create large constant values once only or use recursive functionality. 
 
 
 Partial Default
@@ -245,11 +247,16 @@ Partial Default
 
 ```
 
-const functionContainer = function () {
+const functionReturner = function () {
 
-    const largeConstantInitialization = ["could be a long array",
-        "or something that would be costly to create each time"];
+    const largeConstantInitialization = [
+        "could be a long array",
+        "or something that would be",
+        "costly to create each time"
+    ];
+    
     let recursiveFunction;
+    
     recursiveFunction = function ({input = "", tree}) {
         const localTextContent = tree.textContent;
         const allTextContent = `${input} ${localTextContent}`;
@@ -263,7 +270,7 @@ const functionContainer = function () {
 
 registerWorker({
     name: "initializationTest",
-    resource: functionContainer,
+    resource: functionReturner,
     loadMode: SYMBOLS.FUNCTION,
     initialize: true
 });
@@ -285,7 +292,7 @@ const recursiveDataStruct = {
 };
 work("initializationTest", {tree: recursiveDataStruct})
 .then(function (result) {
-    console.log(result); // 5
+    console.log(result); // -10
 });
 ```
 
@@ -570,6 +577,7 @@ Contributions welcome :)
  * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
  * Test and document limitations more, how many worker can be created and alive at the same time ?
  * Allow asynchronous functions
+ * Reject promise when error in worker (kinda, edge case, code in worker should not throw)
  
 ### Some tests
 
