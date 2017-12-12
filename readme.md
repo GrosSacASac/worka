@@ -259,7 +259,7 @@ const functionReturner = function () {
     
     recursiveFunction = function ({input = "", tree}) {
         const localTextContent = tree.textContent;
-        const allTextContent = `${input} ${localTextContent}`;
+        const allTextContent = `${input} > ${localTextContent}`;
         if (tree.child) {
             return recursiveFunction({input: allTextContent, tree: tree.child});
         }
@@ -292,7 +292,8 @@ const recursiveDataStruct = {
 };
 work("initializationTest", {tree: recursiveDataStruct})
 .then(function (result) {
-    console.log(result); // -10
+    console.log(result);
+    // > top level > middle level > bottom level > underground > -10
 });
 ```
 
@@ -614,6 +615,10 @@ Feel free to open issue to know more.
 #### 2.0.6
 
 add `.npmignore` for light npm install
+
+#### 2.1.1
+
+Do less when there is no web worker support
 
 
 ### License

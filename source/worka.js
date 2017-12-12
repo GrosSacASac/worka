@@ -286,6 +286,9 @@ const prepareWorker = function (worker, lazy, makesSenseToAwake = false) {
 };
 
 const registerWorker = function (options, workerStore = workers) {
+    if (!workerSupport.basic) {
+        return;
+    }
     const worker = {
         ...WORKER_DEFAULT_OPTIONS,
         ...options,
