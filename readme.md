@@ -45,7 +45,7 @@ Inspired by the clean stateless HTTP architecture, something comes in, something
     <body>
         <p>Open console</p>
         <script type="module">
-import { registerWorker, SYMBOLS, work } from "./worka.js";
+import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "./worka.js";
 
 const sort = function (array) {
     array.sort();
@@ -55,7 +55,7 @@ const sort = function (array) {
 registerWorker({
     name: "sort",
     resource: sort,
-    loadMode: SYMBOLS.FUNCTION
+    loadMode: WORKA_SYMBOLS.FUNCTION
 });
 
 work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
@@ -73,15 +73,20 @@ work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
 ## Limitations
 
 
-The state, variables and closures are not shared between DOM globals and Web Worker globals. All required inputs must be sent directly. Web Worker cannot directly touch the [DOM/HTML and some other things also](https://nolanlawson.github.io/html5workertest/).
+The state, variables and closures are not shared between DOM globals and Web Worker globals. All required inputs must be sent directly. Web Worker cannot directly touch the [DOM/HTML and some other things also](https://nolanlawson.github.io/html5workertest/). There is a hard limit on the amount of data send and received from and to a worker. Worker from tabs that do not have focus, may be throttled down. There may be a limit on the amount of workers allowed per page, and crossing that limit may silently kill worker. The hoper and lazy parameters of worka can help with that.
 
+## Import
 
+```
+// may need to change path
+import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "./worka.js";
+```
 
 ## API
 
  * [registerWorker](#registerWorker)
  * [work](#work)
- * [SYMBOLS](#symbols)
+ * [WORKA_SYMBOLS](#worka_symbols)
  * [workerSupport](#workersupport)
 
 
@@ -104,7 +109,7 @@ Describes the worker. Example:
 {
     name: "workerName",
     resource: myFunction,
-    loadMode: SYMBOLS.FUNCTION,
+    loadMode: WORKA_SYMBOLS.FUNCTION,
     lazy: 5,
     hope: 6,
     max: navigator.hardwareConcurrency || 1,
@@ -131,7 +136,7 @@ Any value that can help build the worker. Must be in sync with `loadMode`. For e
 #### loadMode (required)
 
 
-Possible Values: `SYMBOLS.FUNCTION, SYMBOLS.STRING, SYMBOLS.MULTI_FUNCTION`
+Possible Values: `WORKA_SYMBOLS.FUNCTION, WORKA_SYMBOLS.STRING, WORKA_SYMBOLS.MULTI_FUNCTION`
 
 
 Partial Default
@@ -139,12 +144,12 @@ Partial Default
 
 ```
 {
-    loadMode: SYMBOLS.STRING
+    loadMode: WORKA_SYMBOLS.STRING
 }
 ```
 
 
-To use multiple functions inside 1 Worker use `SYMBOLS.MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function.
+To use multiple functions inside 1 Worker use `WORKA_SYMBOLS.MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function.
 
 
 ```
@@ -169,7 +174,7 @@ const returnsMultipleFunctions = function () {
 registerWorker({
     name: "test",
     resource: returnsMultipleFunctions,
-    loadMode: SYMBOLS.MULTI_FUNCTION
+    loadMode: WORKA_SYMBOLS.MULTI_FUNCTION
 });
 
 work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
@@ -217,7 +222,7 @@ const statefullGenerator = function () {
 registerWorker({
     name: "stateTest",
     resource: statefullGenerator,
-    loadMode: SYMBOLS.FUNCTION,
+    loadMode: WORKA_SYMBOLS.FUNCTION,
     stateless: false
 });
 
@@ -271,7 +276,7 @@ const functionReturner = function () {
 registerWorker({
     name: "initializationTest",
     resource: functionReturner,
-    loadMode: SYMBOLS.FUNCTION,
+    loadMode: WORKA_SYMBOLS.FUNCTION,
     initialize: true
 });
 
@@ -354,7 +359,7 @@ Partial Default
 `false` or a positive integer `Number`
 
 
-By default there is no time out. The time out timing start just after work(...).then(...). If the operation takes longer the Promise will reject with SYMBOLS.TIME_OUT_ERROR.
+By default there is no time out. The time out timing start just after work(...).then(...). If the operation takes longer the Promise will reject with WORKA_SYMBOLS.TIME_OUT_ERROR.
 
 
 Partial Default
@@ -397,9 +402,9 @@ Returns a promise that eventually resolves with the result or fails. Use registe
 work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
     console.log(result);
 }).catch(function (reason) {
-    if (reason === SYMBOLS.NO_SUPPORT_ERROR) {
+    if (reason === WORKA_SYMBOLS.NO_SUPPORT_ERROR) {
         console.log("Web Worker API not supported");
-    } else if (reason === SYMBOLS.TIME_OUT_ERROR) {
+    } else if (reason === WORKA_SYMBOLS.TIME_OUT_ERROR) {
         // can only happen with a worker registered with a timeOut
         console.log("Took longer than expected");
     } else {
@@ -420,7 +425,7 @@ the name of the worker or `${name}/${functionName}`.
 The input that will be provided to the worker. To pass multiple inputs use a container, such as an Array or an Object.
 
 
-### SYMBOLS
+### WORKA_SYMBOLS
 
 
 *Read-only* Object containing constant values used at various places for strict equality comparisons.
@@ -443,22 +448,10 @@ The input that will be provided to the worker. To pass multiple inputs use a con
 
 ### Fall back strategy
 
-
-### Network first
-
-```
-const promise = fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
-    return response.text();
-}).then(function (resultString) {
-    const result = Number(resultString);
-    return result;
-}).catch(function (noNetwork) {
-    return work("getPiEstimation", precision);
-});
-```
+When web workers are not supported the promise from `work` will reject. It is possible to do something else in the catch. Below an example where `fetch` is used as a fall-back. Other web worker libraries presented below will automatically switch to `<iframe>` or `setInterval`. While great for developer experience, it may come with security back-doors and/or inconsistencies.
 
 
-### Worker First
+### Worker First, network second
 
 ```
 const fetchFromNetwork = function (precision) {
@@ -471,13 +464,29 @@ const fetchFromNetwork = function (precision) {
 };
 
 const promise = work("getPiEstimation", precision).catch(function (error) {
-    if (error === SYMBOLS.NO_SUPPORT_ERROR) {
+    if (error === WORKA_SYMBOLS.NO_SUPPORT_ERROR) {
         return fetchFromNetwork(precision);
     } else {
         throw error;
     }
 });
 
+```
+
+
+### Network first, worker second
+
+
+
+```
+const promise = fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
+    return response.text();
+}).then(function (resultString) {
+    const result = Number(resultString);
+    return result;
+}).catch(function (noNetwork) {
+    return work("getPiEstimation", precision);
+});
 ```
 
 ### Race
@@ -516,14 +525,14 @@ Memoize is not included by default for maximum flexibility. It is possible to me
 ```
 // imports
 const promiseMemoize = require("promise-memoize");
-const { registerWorker, work, SYMBOLS} = require("worka"); // require not supported yet
+const { registerWorker, work, WORKA_SYMBOLS} = require("worka"); // require not supported yet
 
 
 // register worker
 registerWorker({
     name: "getPiEstimation",
     resource: estimatePi,
-    loadMode: SYMBOLS.FUNCTION
+    loadMode: WORKA_SYMBOLS.FUNCTION
 });
 
 // create memoized version
@@ -554,7 +563,7 @@ const memoizedWork = promiseMemoize(work);
      * high range of browser support
      * Promise or callback based
  * https://github.com/nolanlawson/promise-worker
-     * Small
+     * Smaller
      * Also promised based
  * raw web worker
      * More freedom but might have to reinvent patterns discovered here
@@ -619,6 +628,10 @@ add `.npmignore` for light npm install
 #### 2.1.1
 
 Do less when there is no web worker support
+
+#### 3.0.0
+
+Renamed SYMBOLS into WORKA_SYMBOLS
 
 
 ### License

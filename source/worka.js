@@ -1,6 +1,6 @@
 /*worka.js*/
-/*
 
+/*
 const URL = window.URL || window.webkitURL;
 
 optimisation ideas
@@ -13,21 +13,22 @@ especially for function that have variability in time needed for execution
 
 proper de-registration for failures ?
 
-
+alternative feature detection
+https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js
 */
+
 /*jslint
     es6, maxerr: 50, browser, devel, fudge, maxlen: 100
 */
 /*global
-    Worker, URL, Blob
+    window, Worker, URL, Blob
 */
 
 
-export {registerWorker, work , workerSupport, SYMBOLS};
+export {registerWorker, work, workerSupport, WORKA_SYMBOLS};
 
 const workerSupport = {
-    // alternative
-    // https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js
+
     basic: Boolean(window.Worker),
     transferrables: undefined
     // encapsulation: undefined // Worker inside Worker
@@ -37,7 +38,7 @@ const workerSupport = {
 // a priori not supported in IE 10, 11
 /*
 const smallArrayBuffer = new ArrayBuffer(1);
-const emptyWorker = new Worker("../empty-worker.js"); 
+const emptyWorker = new Worker("../empty-worker.js");
 
 emptyWorker.postMessage(smallArrayBuffer, [smallArrayBuffer]);
 
@@ -48,7 +49,7 @@ workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
 
 const workers = {};
 
-const SYMBOLS = {
+const WORKA_SYMBOLS = {
     // loadMode
     STRING: 0,
     DECORATED: 1,
@@ -59,13 +60,14 @@ const SYMBOLS = {
     // errors
     NO_SUPPORT_ERROR: 0,
     TIME_OUT_ERROR: 1,
-    SPLIT: "/"
+    SPLIT: "/",
+    JS_MIME: {type: "text/javascript"}
 };
 
 const WORKER_DEFAULT_OPTIONS = {
     name: "",
     resource: "",
-    loadMode: SYMBOLS.STRING,
+    loadMode: WORKA_SYMBOLS.STRING,
     lazy: 5,
     hope: 6,
     max: navigator.hardwareConcurrency || 1,
@@ -91,8 +93,10 @@ const WORKER_INITIAL_SETTINGS = {
 const loadWorker = function (worker) {
     const resource = worker.resource;
     const loadMode = worker.loadMode;
-    if (loadMode === SYMBOLS.FUNCTION ||
-        loadMode === SYMBOLS.MULTI_FUNCTION) {
+    if (
+        loadMode === WORKA_SYMBOLS.FUNCTION ||
+        loadMode === WORKA_SYMBOLS.MULTI_FUNCTION
+    ) {
         worker.originalAsString = resource.toString();
     }
     worker.loaded = true;
@@ -102,7 +106,7 @@ const decorateWorker = function (worker) {
     const originalAsString = worker.originalAsString;
     const loadMode = worker.loadMode;
     let decoratedAsString;
-    if (loadMode === SYMBOLS.MULTI_FUNCTION) {
+    if (loadMode === WORKA_SYMBOLS.MULTI_FUNCTION) {
         decoratedAsString = `
 "use strict";
 const functions = ${originalAsString}();
@@ -122,7 +126,7 @@ self.postMessage({
 });
 });
         `;
-        
+
     } else {
         let initializeSuffix;
         if (worker.stateless && !worker.initialize) {
@@ -155,7 +159,7 @@ const instanciateWorker = function (worker) {
     if (worker.workerObjectURL) {
         workerObjectURL = worker.workerObjectURL;
     } else {
-        const workerBlob = new Blob([decoratedAsString], { type: "text/javascript" });
+        const workerBlob = new Blob([decoratedAsString], WORKA_SYMBOLS.JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
     const instance = new Worker(workerObjectURL);
@@ -200,7 +204,7 @@ const afterWorkerFinished = function (worker) {
         // still has things to do
         return;
     }
-    
+
     const hope = worker.hope;
     if (hope > 5) {
         return;
@@ -216,12 +220,12 @@ const afterWorkerFinished = function (worker) {
 
 const addEventListenerToWorker = function (worker) {
     const instance = worker.instance;
-    instance.addEventListener("message", function(event) {
+    instance.addEventListener("message", function (event) {
         const message = event.data;
         const result = message.result;
         const resolve = worker.resolutionQueue.shift();
-        resolve(result);            
-        afterWorkerFinished(worker);            
+        resolve(result);
+        afterWorkerFinished(worker);
     });
     worker.hasEventListener = true;
 };
@@ -237,16 +241,16 @@ const prepareWorkerTimeOut = function (worker, resolve, reject, preparedInput) {
         // if the resolutionQueue still includes the resolve, it means it has not yet
         // resolved
         if (worker.resolutionQueue.includes(resolve)) {
-            
-            /*const discardedResolve = */worker.resolutionQueue.shift();
+            /*const discardedResolve = */
+            worker.resolutionQueue.shift();
             // forceTerminateWorker, because we don't care anymore about the result
             forceTerminateWorker(worker);
             if (worker.inputQueue.length !== 0) {
                 instanciateWorker(worker);
-                addEventListenerToWorker(worker)
+                addEventListenerToWorker(worker);
             }
             afterWorkerFinished(worker);
-            reject(SYMBOLS.TIME_OUT_ERROR);
+            reject(WORKA_SYMBOLS.TIME_OUT_ERROR);
         }
     }, worker.timeOut);
 };
@@ -302,10 +306,10 @@ const registerWorker = function (options, workerStore = workers) {
 
     const loadMode = worker.loadMode;
     const resource = worker.resource;
-    if (loadMode === SYMBOLS.STRING) {
+    if (loadMode === WORKA_SYMBOLS.STRING) {
         worker.originalAsString = resource;
         worker.loaded = true;
-    } else if (loadMode === SYMBOLS.DECORATED) {
+    } else if (loadMode === WORKA_SYMBOLS.DECORATED) {
         worker.decoratedAsString = resource;
         worker.decorated = true;
         worker.loaded = true;
@@ -324,8 +328,10 @@ const findWorkerWithEmptyQueue = function (workerStore = workers) {
 const mock = {resolutionQueue: {length: Number.MAX_SAFE_INTEGER}};
 const workerWithLowestResolutionQueue = function (workers) {
     return workers.reduce(function (workerWithLowestResolutionQueueSoFar, worker) {
-        if (worker.resolutionQueue.length <
-            workerWithLowestResolutionQueueSoFar.resolutionQueue.length) {
+        if (
+            worker.resolutionQueue.length <
+            workerWithLowestResolutionQueueSoFar.resolutionQueue.length
+        ) {
             return worker;
         }
         return workerWithLowestResolutionQueueSoFar;
@@ -336,7 +342,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     // is overloaded on many levels, could benefit from refactoring
     // functionName not needed ?
     if (!workerSupport.basic) {
-        return Promise.reject(SYMBOLS.NO_SUPPORT_ERROR);
+        return Promise.reject(WORKA_SYMBOLS.NO_SUPPORT_ERROR);
     }
     let preparedInput;
     let workerName;
@@ -344,14 +350,17 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     if (Array.isArray(name)) {
         [workerName, functionName] = name;
     } else {
-        const nameSplit = name.split(SYMBOLS.SPLIT);
+        const nameSplit = name.split(WORKA_SYMBOLS.SPLIT);
         if (nameSplit.length === 2) {
-            // worker.loadMode === SYMBOLS.MULTI_FUNCTION
+            // worker.loadMode === WORKA_SYMBOLS.MULTI_FUNCTION
             [workerName, functionName] = nameSplit;
-            
+
         } else {
             workerName = name;
         }
+    }
+    if (!Object.prototype.hasOwnProperty.call(workerStore, workerName)) {
+        return Promise.reject(`"${workerName}" not registered`);
     }
     if (Object.prototype.hasOwnProperty.call(input, "input")) {
         // already prepared
@@ -360,15 +369,12 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
         preparedInput = {
             input
         };
-        if (functionName) {
+        if (functionName !== undefined) {
             preparedInput.functionName = functionName;
         }
     }
-    if (!Object.prototype.hasOwnProperty.call(workerStore, workerName)) {
-        return Promise.reject(`"${workerName}" not registered`);
-    }
     const worker = workerStore[workerName];
-    
+
     if (worker.stateless && worker.resolutionQueue.length !== 0 && !forceWork) {
         // the worker is already doing something and it is stateless
         // only stateless worker can duplicate themselves
@@ -381,16 +387,20 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             });
         }
         const coWorkerCount = Object.keys(worker.coWorkers).length;
-        
+
         if (coWorkerCount !== 0) {
             // there are already coWorkers
             const workerWithEmptyQueue = findWorkerWithEmptyQueue(worker.coWorkers);
             if (workerWithEmptyQueue) {
                 // at least 1 is idle, give it something to do
-                return work([workerWithEmptyQueue.name, functionName], preparedInput, worker.coWorkers);
+                return work(
+                    [workerWithEmptyQueue.name, functionName],
+                    preparedInput,
+                    worker.coWorkers
+                );
             }
         }
-        
+
         // there are no idle coworkers
         if ((coWorkerCount + 1) < worker.max) {
             // the worker count is below maximum, we can create more
@@ -403,11 +413,14 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
 
         // search for the worker with the lowest resolution queue and delegate to it
         // use a boolean to avoid infinite recursion loop
-        const bestWorker = workerWithLowestResolutionQueue(Object.values(worker.coWorkers).concat(worker));
+        const bestWorker = workerWithLowestResolutionQueue(
+            Object.values(worker.coWorkers).concat(worker)
+        );
         return work([bestWorker.name, functionName], preparedInput, bestWorker.workerStore, true);
     }
-    
-    return new Promise(function (resolve, reject) {            
+
+    // normal case
+    return new Promise(function (resolve, reject) {
         worker.resolutionQueue.push(resolve);
         prepareWorker(worker, 0);
         worker.awakened = true;

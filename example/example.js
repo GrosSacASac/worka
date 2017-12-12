@@ -4,7 +4,7 @@
 */
 
 
-import { registerWorker, SYMBOLS, work } from "../source/worka.js";
+import {registerWorker, WORKA_SYMBOLS, work} from "../source/worka.js";
 import d from "./node_modules/dom99/built/dom99Module.js";
 import {
     doNTimes,
@@ -41,13 +41,13 @@ let precision = precisionFromPrecisionLevel(INITIAL_PRECISION_LEVEL);
 registerWorker({
     name: "getPiEstimation",
     resource: estimatePi,
-    loadMode: SYMBOLS.FUNCTION
+    loadMode: WORKA_SYMBOLS.FUNCTION
 });
 
 registerWorker({
     name: "getPiEstimationForceRestart",
     resource: estimatePi,
-    loadMode: SYMBOLS.FUNCTION,
+    loadMode: WORKA_SYMBOLS.FUNCTION,
     hope: 5
 });
 
