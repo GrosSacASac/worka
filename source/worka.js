@@ -49,17 +49,23 @@ workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
 
 const workers = {};
 
+let symbol = 0;
+const symbolGenerator = function () {
+    symbol += 1;
+    return symbol;
+};
+
 const WORKA_SYMBOLS = {
     // loadMode
-    STRING: 0,
-    DECORATED: 1,
-    FUNCTION: 2,
-    MULTI_FUNCTION: 5,
-    FILE: 3,
-    DECORATED_FILE: 4,
+    STRING: symbolGenerator(),
+    DECORATED: symbolGenerator(),
+    FUNCTION: symbolGenerator(),
+    MULTI_FUNCTION: symbolGenerator(),
+    FILE: symbolGenerator(),
+    DECORATED_FILE: symbolGenerator(),
     // errors
-    NO_SUPPORT_ERROR: 0,
-    TIME_OUT_ERROR: 1,
+    NO_SUPPORT_ERROR: symbolGenerator(),
+    TIME_OUT_ERROR: symbolGenerator(),
     SPLIT: "/",
     JS_MIME: {type: "text/javascript"}
 };
