@@ -625,18 +625,18 @@ Feel free to open issue to know more.
 
 Now importable as script. See built/worka_script.js
 
+#### 3.0.0
 
-#### 2.0.6
-
-add `.npmignore` for light npm install
+Renamed SYMBOLS into WORKA_SYMBOLS
 
 #### 2.1.1
 
 Do less when there is no web worker support
 
-#### 3.0.0
+#### 2.0.6
 
-Renamed SYMBOLS into WORKA_SYMBOLS
+add `.npmignore` for light npm install
+
 
 
 ### License
