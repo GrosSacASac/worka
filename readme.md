@@ -583,8 +583,8 @@ Contributions welcome :)
  * expose decorate to compile time
  * allow asynchronous function execution
  * report progress system design (streams ?)
- * es5, script, and old browser support
- * Opt in for transferable ,maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
+ * es5 and old browser support
+ * Opt in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
  * Test and document limitations more, how many worker can be created and alive at the same time ?
  * Allow asynchronous functions
  * Reject promise when error in worker (kinda, edge case, code in worker should not throw)
