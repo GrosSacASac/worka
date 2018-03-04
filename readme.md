@@ -9,7 +9,7 @@ Working with Web Workers is interesting because it makes things previously only 
  * Avoid blocking the main-DOM thread
  * Audio, video, canvas background processing
  * Progressive Enhancement
- 
+
 
 ## What
 
@@ -238,7 +238,7 @@ work("stateTest", 5).then(function (result) {
 #### initialize
 
 
-To force an initialization phase, use `initialize: true` and use the delayed initialization pattern: Provide a function that returns a function that will run on each `work` and that closes over variables defined once. This is especially useful to create large constant values once only or use recursive functionality. 
+To force an initialization phase, use `initialize: true` and use the delayed initialization pattern: Provide a function that returns a function that will run on each `work` and that closes over variables defined once. This is especially useful to create large constant values once only or use recursive functionality.
 
 
 Partial Default
@@ -259,9 +259,9 @@ const functionReturner = function () {
         "or something that would be",
         "costly to create each time"
     ];
-    
+
     let recursiveFunction;
-    
+
     recursiveFunction = function ({input = "", tree}) {
         const localTextContent = tree.textContent;
         const allTextContent = `${input} > ${localTextContent}`;
@@ -588,7 +588,7 @@ Contributions welcome :)
  * Test and document limitations more, how many worker can be created and alive at the same time ?
  * Allow asynchronous functions
  * Reject promise when error in worker (kinda, edge case, code in worker should not throw)
- 
+
 ### Some tests
 
 Look at the /example folder
@@ -620,6 +620,11 @@ Feel free to open issue to know more.
 
 
 ### Updates
+
+#### 3.1.3
+
+Now importable as script. See built/worka_script.js
+
 
 #### 2.0.6
 

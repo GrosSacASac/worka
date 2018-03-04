@@ -1,7 +1,7 @@
 {
   "name": "worka",
-  "version": "3.0.1",
-  "description": "Easy web workers",
+  "version": "3.1.3",
+  "description": "Easy web workers modelled as HTTP API endpoints",
   "main": "",
   "module": "source/worka.js",
   "directories": {
@@ -11,12 +11,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "buildExample": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js",
     "try": "node example/index.js 8080",
-    "buildBrowser": "rollup source/worka.js --output.format iife --output.file built/worka_script.js"
+    "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/GrosSacASac/worka.git"
   },
   "author": "GrosSacASacs",
-  "license": "BSL-1.0"
+  "license": "BSL-1.0",
+  "devDependencies": {
+    "rollup": "^0.56.3"
+  }
 }
