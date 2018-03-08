@@ -609,7 +609,7 @@ There you can compare
  * Without web worker
  * With remote server
 
-The results can vary alot and depends, on network condition, ability to run the software in
+The results can vary a lot and depends, on network condition, ability to run the software in
 parallel (often in %), setup time/work time,
 
 Feel free to open issue to know more.
