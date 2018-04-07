@@ -27,37 +27,37 @@
                         data-function="setPrecision"
                     >
                 </label>
-                
+
                 <button
-                    data-function="tryWithWebWorkerPreloaded"
+                    data-function="webWorkerPreloaded"
                 >
                     With preloaded web worker
                 </button>
                 <button
-                    data-function="tryWithWebWorker"
+                    data-function="webWorkerWithCache"
                 >
                     With web worker
                 </button>
-                
+
                 <button
-                    data-function="tryWithWebWorkerNoCache"
+                    data-function="webWorkerNoCache"
                 >
                     With web worker, without cache
                 </button>
-                
+
                 <button
-                    data-function="tryWithOutWebWorker"
+                    data-function="withOutWebWorker"
                 >
                     Without web worker
                 </button>
-                
+
                 <button
-                    data-function="tryWithRemoteServer"
+                    data-function="remoteServer"
                 >
                     With remote server
                 </button>
             </div>
-            
+
             <div>
                 <h2>Result</h2>
                 <output
@@ -67,7 +67,7 @@
                     data-variable="duration"
                 ></output>
             </div>
-            
+
             <div>
                 <h2>Statistics</h2>
                 <button
@@ -113,7 +113,7 @@
                 </template>
                 <div data-list="allResults-test-category"></div>
             </div>
-            
+
         </main>
         <!-- put here a footer <footer></footer> -->
         <script src="example.js" type="module"></script>

@@ -1,8 +1,8 @@
 'use strict';
 
-var estimatePi = function (precision) {
+function estimatePi (precision) {
     /* PI Estimation,
-        precision is also limited by the Number type type precision
+        precision is also limited by the Number type precision
         correctness can be affected by the randomness Math.random()*/
     const radius = 1;
     let xCoordinate;
@@ -10,11 +10,11 @@ var estimatePi = function (precision) {
     let intermediary;
     let i;
     let insideCounter = 0;
-    
+
     for (i = 0; i < precision; i += 1) {
         xCoordinate = Math.random();
         yCoordinate = Math.random();
-        
+
         intermediary = (xCoordinate ** 2) + (yCoordinate ** 2);
         // ** 0.5 is not required because we compare with 1;
         if (intermediary < radius) {
@@ -22,6 +22,6 @@ var estimatePi = function (precision) {
         }
     }
     return (insideCounter / precision) * 4;
-};
+}
 
 module.exports = estimatePi;

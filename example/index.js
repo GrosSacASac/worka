@@ -51,7 +51,7 @@ app.get('/example/estimatePiWorkerNoCache.js', function (req, res) {
             etag: false
         });
     }, ARTIFICIAL_DELAY);
-    
+
 
 });
 app.get('/example/estimatePiWorker.js', function (req, res) {
@@ -62,13 +62,13 @@ app.get('/example/estimatePiWorker.js', function (req, res) {
             maxAge: 120000
         });
     }, ARTIFICIAL_DELAY);
-    res.sendFile(`${__dirname}/estimatePiWorker.js`, {
-        maxAge: 120000
-    });
-
 });
 
-app.use(express.static('./'))
+app.use(express.static('./'));
 app.listen(PORT, function () {
-  console.log('Example app listening on port !', PORT)
-})
+  console.log(
+    `Example app listening on port ${PORT}! ,
+    open
+http://localhost:${PORT}/example/example.html`
+  );
+});

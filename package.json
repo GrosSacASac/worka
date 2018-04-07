@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "description": "Easy web workers modelled as HTTP API endpoints",
   "main": "",
   "module": "source/worka.js",
@@ -9,9 +9,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "buildExample": "rollup example/estimatePi.js --format cjs --output example/estimatePiNode.js",
-    "try": "node example/index.js 8080",
-    "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js"
+    "buildExample": "rollup example/estimatePi.js --output.format cjs --output.file example/estimatePiNode.js",
+    "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
+    "try": "node example/index.js 8080"
   },
   "repository": {
     "type": "git",
