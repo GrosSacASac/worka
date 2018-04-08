@@ -587,7 +587,6 @@ Contributions welcome :)
  * Opt in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
  * Test and document limitations more, how many worker can be created and alive at the same time ?
  * Allow asynchronous functions
- * Reject promise when error in worker (kinda, edge case, code in worker should not throw)
 
 ### Some tests
 
