@@ -621,6 +621,10 @@ Feel free to open issue to know more.
 
 ### Updates
 
+#### 4.0.0
+
+Run time errors inside the worker will cause the catch statement to be executed with the error message inside as String. See example/workaRunTimeError.html Syntax Errors are not managed (same as before)
+
 #### 3.1.3
 
 Now importable as script. See built/worka_script.js

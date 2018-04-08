@@ -10,22 +10,30 @@
 
 import { registerWorker, WORKA_SYMBOLS, work } from "../source/worka.js";
 
-const sort = function (array) {
-    array.sort(); // run time error will trigger the catch
-    return array;
-};
 
+// triggers a syntax error, which needs to be fixed (not catched)
+const sort = `fffffffffffunction (array) {
+    array.sortt();
+    return array;
+}`;
+
+console.log("1");
 registerWorker({
     name: "sort",
     resource: sort,
-    loadMode: WORKA_SYMBOLS.FUNCTION
+    loadMode: WORKA_SYMBOLS.STRING
 });
 
+console.log("2");
 work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
     console.log(result);
     console.log("after success");
+}).catch(function (error) {
+    console.log("in the catch");
+    console.error(error);
 });
 
+console.log("3");
     </script>
     </body>
 </html>

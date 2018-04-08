@@ -7,7 +7,7 @@ optimisation ideas
 
 remove unused things inside worker, like originalAsString if it is never going to be used again
 
-could change workerWithLowestResolutionQueue, instead of guessing what worker will be idle the soonest,
+could change workerWithLowestresolveRejectQueue, instead of guessing what worker will be idle the soonest,
 we could wait for the next worker to become idle, could be better than guessing,
 especially for function that have variability in time needed for execution
 
@@ -38,7 +38,7 @@ const workerSupport = {
 // a priori not supported in IE 10, 11
 /*
 const smallArrayBuffer = new ArrayBuffer(1);
-const emptyWorker = new Worker("../empty-worker.js");
+const emptyWorker = new Worker(`../empty-worker.js`);
 
 emptyWorker.postMessage(smallArrayBuffer, [smallArrayBuffer]);
 
@@ -66,13 +66,13 @@ const WORKA_SYMBOLS = {
     // errors
     NO_SUPPORT_ERROR: symbolGenerator(),
     TIME_OUT_ERROR: symbolGenerator(),
-    SPLIT: "/",
-    JS_MIME: {type: "text/javascript"}
+    SPLIT: `/`,
+    JS_MIME: {type: `text/javascript`}
 };
 
 const WORKER_DEFAULT_OPTIONS = {
-    name: "",
-    resource: "",
+    name: ``,
+    resource: ``,
     loadMode: WORKA_SYMBOLS.STRING,
     lazy: 5,
     hope: 6,
@@ -85,15 +85,15 @@ const WORKER_DEFAULT_OPTIONS = {
 // separate from WORKER_DEFAULT_OPTIONS, impossible to overwrite with options in registerWorker
 const WORKER_INITIAL_SETTINGS = {
     loaded: false,
-    originalAsString: "",
+    originalAsString: ``,
     decorated: false,
-    decoratedAsString: "",
+    decoratedAsString: ``,
     instanciated: false,
     workerObjectURL: undefined,
     instance: undefined,
     awakened: false,
     hasEventListener: false,
-    resolutionQueue: undefined // []
+    resolveRejectQueue: undefined // []
 };
 
 const loadWorker = function (worker) {
@@ -108,50 +108,68 @@ const loadWorker = function (worker) {
     worker.loaded = true;
 };
 
+const useStrict = `"use strict";`
+/* conver to String because errorEvent can not be cloned*/
+const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
+    errorEvent.preventDefault();
+    let asString;
+    if (errorEvent.message) {
+        asString = errorEvent.message;
+    } else {
+        asString = String(errorEvent);
+    }
+    self.postMessage({
+        error: asString
+    });
+});`;
 const decorateWorker = function (worker) {
     const originalAsString = worker.originalAsString;
     const loadMode = worker.loadMode;
     let decoratedAsString;
     if (loadMode === WORKA_SYMBOLS.MULTI_FUNCTION) {
         decoratedAsString = `
-"use strict";
+${useStrict}
+${errorHandler}
 const functions = ${originalAsString}();
-self.addEventListener("message", function(event) {
-const message = event.data;
-if (!Object.prototype.hasOwnProperty.call(message, "input")) {
-    return; // only waking up
-}
-const input = message.input;
-const functionName = message.functionName;
-if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
-    console.error(functionName, "not found");
-    return;
-}
-self.postMessage({
-    result: functions[functionName](input)
-});
+self.addEventListener(\`message\`, function(event) {
+    const message = event.data;
+    if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
+        return;
+    }
+    const input = message.input;
+    const functionName = message.functionName;
+    if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
+        self.postMessage({
+            error: \`"\${functionName}" not found\`
+        });
+        return;
+    }
+    self.postMessage({
+        result: functions[functionName](input)
+    });
 });
         `;
 
     } else {
         let initializeSuffix;
         if (worker.stateless && !worker.initialize) {
-            initializeSuffix = "";
+            initializeSuffix = ``;
         } else {
-            initializeSuffix = "()";
+            initializeSuffix = `()`;
         }
         decoratedAsString = `
-"use strict";
+${useStrict}
+${errorHandler}
 const doWork = ${originalAsString}${initializeSuffix};
-self.addEventListener("message", function(event) {
-const message = event.data;
-if (!Object.prototype.hasOwnProperty.call(message, "input")) {
-    return; // only waking up
-}
-const input = message.input;
-self.postMessage({
-    result: doWork(input)
-});
+self.addEventListener(\`message\`, function(event) {
+    const message = event.data;
+    if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
+        return; // only waking up
+    }
+    const input = message.input;
+    self.postMessage({
+        result: doWork(input)
+    });
 });
         `;
     }
@@ -185,7 +203,7 @@ const forceAwakenWorker = function (worker) {
     // this function can be used to awake the worker before it is used
     // can be a good idea when the worker needs time to set up
     const instance = worker.instance;
-    instance.postMessage("");
+    instance.postMessage(``);
     worker.awakened = true; // or will be in a few
 };
 
@@ -202,7 +220,7 @@ const forceTerminateWorker = function (worker) {
 const afterWorkerFinished = function (worker) {
     /* a worker with 0 hope was made to be used 1 time
     a worker with 100 hope was made to be used multiple times*/
-    const length = worker.resolutionQueue.length;
+    const length = worker.resolveRejectQueue.length;
     if (length !== 0) {
         if (worker.timeOut && worker.inputQueue.length !== 0) {
             worker.instance.postMessage(worker.inputQueue.shift());
@@ -226,29 +244,37 @@ const afterWorkerFinished = function (worker) {
 
 const addEventListenerToWorker = function (worker) {
     const instance = worker.instance;
-    instance.addEventListener("message", function (event) {
+    instance.addEventListener(`message`, function (event) {
         const message = event.data;
-        const result = message.result;
-        const resolve = worker.resolutionQueue.shift();
-        resolve(result);
-        afterWorkerFinished(worker);
+        const [resolve, reject] = worker.resolveRejectQueue.shift();
+        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+            const result = message.result;
+            resolve(result);
+            afterWorkerFinished(worker);
+        } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
+            const error = message.error;
+            reject(error);
+            afterWorkerFinished(worker);
+        }
     });
     worker.hasEventListener = true;
 };
 
 const prepareWorkerTimeOut = function (worker, resolve, reject, preparedInput) {
-    if (worker.resolutionQueue.length === 1) {
+    if (worker.resolveRejectQueue.length === 1) {
         worker.instance.postMessage(preparedInput);
     } else {
         worker.inputQueue.push(preparedInput);
     }
 
     setTimeout(function () {
-        // if the resolutionQueue still includes the resolve, it means it has not yet
+        // if the resolveRejectQueue still includes the resolve, it means it has not yet
         // resolved
-        if (worker.resolutionQueue.includes(resolve)) {
+        if (worker.resolveRejectQueue.findIndex(function ([resolveX]) {
+            return resolve === resolveX;
+        }) !== -1) {
             /*const discardedResolve = */
-            worker.resolutionQueue.shift();
+            worker.resolveRejectQueue.shift();
             // forceTerminateWorker, because we don't care anymore about the result
             forceTerminateWorker(worker);
             if (worker.inputQueue.length !== 0) {
@@ -304,7 +330,7 @@ const registerWorker = function (options, workerStore = workers) {
         ...options,
         ...WORKER_INITIAL_SETTINGS
     };
-    worker.resolutionQueue = [];
+    worker.resolveRejectQueue = [];
     if (worker.timeOut && worker.hope > 5) {
         worker.inputQueue = [];
         // need to manage input queue manually for timeouts
@@ -327,20 +353,20 @@ const registerWorker = function (options, workerStore = workers) {
 const findWorkerWithEmptyQueue = function (workerStore = workers) {
     // returns the worker found or undefined
     return Object.values(workerStore).find(function (worker) {
-        return worker.resolutionQueue.length === 0;
+        return worker.resolveRejectQueue.length === 0;
     });
 };
 
-const mock = {resolutionQueue: {length: Number.MAX_SAFE_INTEGER}};
-const workerWithLowestResolutionQueue = function (workers) {
-    return workers.reduce(function (workerWithLowestResolutionQueueSoFar, worker) {
+const mock = {resolveRejectQueue: {length: Number.MAX_SAFE_INTEGER}};
+const workerWithLowestresolveRejectQueue = function (workers) {
+    return workers.reduce(function (workerWithLowestresolveRejectQueueSoFar, worker) {
         if (
-            worker.resolutionQueue.length <
-            workerWithLowestResolutionQueueSoFar.resolutionQueue.length
+            worker.resolveRejectQueue.length <
+            workerWithLowestresolveRejectQueueSoFar.resolveRejectQueue.length
         ) {
             return worker;
         }
-        return workerWithLowestResolutionQueueSoFar;
+        return workerWithLowestresolveRejectQueueSoFar;
     }, mock);
 };
 
@@ -368,7 +394,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     if (!Object.prototype.hasOwnProperty.call(workerStore, workerName)) {
         return Promise.reject(`"${workerName}" not registered`);
     }
-    if (Object.prototype.hasOwnProperty.call(input, "input")) {
+    if (Object.prototype.hasOwnProperty.call(input, `input`)) {
         // already prepared
         preparedInput = input;
     } else {
@@ -381,14 +407,14 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     }
     const worker = workerStore[workerName];
 
-    if (worker.stateless && worker.resolutionQueue.length !== 0 && !forceWork) {
+    if (worker.stateless && worker.resolveRejectQueue.length !== 0 && !forceWork) {
         // the worker is already doing something and it is stateless
         // only stateless worker can duplicate themselves
         if (!worker.coWorkers) {
             // the worker has not yet utilized this feature and needs to be initialized
             worker.coWorkers = {};
             worker.nextCoWorkerOptions = Object.assign({}, worker, {
-                name: "0",
+                name: `0`,
                 workerStore: worker.coWorkers
             });
         }
@@ -419,7 +445,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
 
         // search for the worker with the lowest resolution queue and delegate to it
         // use a boolean to avoid infinite recursion loop
-        const bestWorker = workerWithLowestResolutionQueue(
+        const bestWorker = workerWithLowestresolveRejectQueue(
             Object.values(worker.coWorkers).concat(worker)
         );
         return work([bestWorker.name, functionName], preparedInput, bestWorker.workerStore, true);
@@ -427,7 +453,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
 
     // normal case
     return new Promise(function (resolve, reject) {
-        worker.resolutionQueue.push(resolve);
+        worker.resolveRejectQueue.push([resolve, reject]);
         prepareWorker(worker, 0);
         worker.awakened = true;
         if (worker.timeOut) {
