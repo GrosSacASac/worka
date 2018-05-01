@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Easy web workers modelled as HTTP API endpoints",
   "main": "",
   "module": "source/worka.js",

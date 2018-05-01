@@ -1,0 +1,14 @@
+{
+  "name": "example-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "worka-node",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "author",
+  "license": "BSL-1.0",
+  "dependencies": {
+    "webworker-threads": "^0.7.13"
+  }
+}
