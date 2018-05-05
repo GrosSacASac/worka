@@ -11,6 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "buildExample": "rollup example/estimatePi.js --output.format cjs --output.file example/estimatePiNode.js",
     "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
+    "buildCommonJs": "rollup source/worka.js --output.format commonjs --output.name \"worka\" --output.file built/worka_require.js",
     "try": "node example/index.js 8080"
   },
   "repository": {
