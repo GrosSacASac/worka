@@ -620,6 +620,10 @@ Feel free to open issue to know more.
 
 ### Updates
 
+#### 4.0.3
+
+Now importable with require. See built/worka_require.js
+
 #### 4.0.0
 
 Run time errors inside the worker will cause the catch statement to be executed with the error message inside as String. See example/workaRunTimeError.html Syntax Errors are not managed (same as before)
