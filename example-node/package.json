@@ -4,7 +4,8 @@
   "description": "",
   "main": "worka-node",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ex1": "node simplest_usage.js"
   },
   "author": "author",
   "license": "BSL-1.0",

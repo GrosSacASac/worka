@@ -29,7 +29,7 @@ export {registerWorker, work, workerSupport, WORKA_SYMBOLS};
 
 const workerSupport = {
 
-    basic: Boolean(window.Worker),
+    basic: (typeof Worker === `function`),
     transferrables: undefined
     // encapsulation: undefined // Worker inside Worker
 };
@@ -70,13 +70,17 @@ const WORKA_SYMBOLS = {
     JS_MIME: {type: `text/javascript`}
 };
 
+let max = 1;
+if (typeof navigator === `object`) {
+    max = navigator.hardwareConcurrency || max;
+}
 const WORKER_DEFAULT_OPTIONS = {
     name: ``,
     resource: ``,
     loadMode: WORKA_SYMBOLS.STRING,
     lazy: 5,
     hope: 6,
-    max: navigator.hardwareConcurrency || 1,
+    max,
     stateless: true,
     initialize: false,
     timeOut: false
