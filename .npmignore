@@ -1,5 +1,6 @@
 #npm only ignores
 example/
+example-node/
 
 # to get these files copy from github
 pivatenoten.txt
