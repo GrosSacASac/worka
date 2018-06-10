@@ -73,7 +73,9 @@ work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
 ## Limitations
 
 
-The state, variables and closures are not shared between DOM globals and Web Worker globals. All required inputs must be sent directly. Web Worker cannot directly touch the [DOM/HTML and some other things also](https://nolanlawson.github.io/html5workertest/). There is a hard limit on the amount of data send and received from and to a worker. Worker from tabs that do not have focus, may be throttled down. There may be a limit on the amount of workers allowed per page, and crossing that limit may silently kill worker. The hoper and lazy parameters of worka can help with that.
+The state, variables and closures are not shared between DOM globals and Web Worker globals. All required inputs must be sent directly. Web Worker cannot directly touch the [DOM/HTML and some other things also](https://nolanlawson.github.io/html5workertest/).
+
+There is a hard limit (about 1300 kB per message) on the amount of data send and received from and to a worker. Worker from tabs that do not have focus, may be throttled down. There is a limit on the amount of workers allowed , and crossing that limit may silently kill worker. The hope and lazy parameters of worka do help.
 
 ## Import
 
@@ -578,14 +580,11 @@ Contributions welcome :)
 
 ### To Do
 
-
- * add keywords in package.json and topics (github)
  * expose decorate to compile time
  * allow asynchronous function execution
  * report progress system design (streams ?)
  * es5 and old browser support
  * Opt in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
- * Test and document limitations more, how many worker can be created and alive at the same time ?
  * Allow asynchronous functions
 
 ### Some tests
