@@ -239,24 +239,19 @@ const afterWorkerFinished = function (worker) {
     if (hope > 0) {
         return;
     }
-    const workerStore = worker.workerStore;
-    delete workerStore[worker.name];
+    delete worker.workerStore[worker.name];
 };
 
 
 const afterWorkerErrored = function (worker) {
     /* stop everything */
-    worker.inputQueue = undefined;
-    let length = worker.resolveRejectQueue.length;
-    while (length !== 0) {
-        const [resolve, reject] = (worker.resolveRejectQueue.shift());
-        reject(`request to worker canceled because an error occured before`);
-        length = worker.resolveRejectQueue.length;
-    }
+    const error = `request to worker canceled because an error occured before`;
+    worker.resolveRejectQueue.forEach(function ([resolve, reject]) {
+        reject(error);
+    });
 
     forceTerminateWorker(worker);
-    const workerStore = worker.workerStore;
-    delete workerStore[worker.name];
+    delete worker.workerStore[worker.name];
 };
 
 const addEventListenerToWorker = function (worker) {
