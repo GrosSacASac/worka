@@ -49,23 +49,18 @@ workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
 
 const workers = {};
 
-let symbol = 0;
-const symbolGenerator = function () {
-    symbol += 1;
-    return symbol;
-};
 
 const WORKA_SYMBOLS = {
     // loadMode
-    STRING: symbolGenerator(),
-    DECORATED: symbolGenerator(),
-    FUNCTION: symbolGenerator(),
-    MULTI_FUNCTION: symbolGenerator(),
-    FILE: symbolGenerator(),
-    DECORATED_FILE: symbolGenerator(),
+    STRING: Symbol(),
+    DECORATED: Symbol(),
+    FUNCTION: Symbol(),
+    MULTI_FUNCTION: Symbol(),
+    FILE: Symbol(),
+    DECORATED_FILE: Symbol(),
     // errors
-    NO_SUPPORT_ERROR: symbolGenerator(),
-    TIME_OUT_ERROR: symbolGenerator(),
+    NO_SUPPORT_ERROR: Symbol(),
+    TIME_OUT_ERROR: Symbol(),
     SPLIT: `/`,
     JS_MIME: {type: `text/javascript`}
 };
@@ -97,7 +92,9 @@ const WORKER_INITIAL_SETTINGS = {
     instance: undefined,
     awakened: false,
     hasEventListener: false,
-    resolveRejectQueue: undefined // []
+    resolveRejectQueue: undefined,
+    inputQueue: undefined,
+    workerStore: workers
 };
 
 const loadWorker = function (worker) {
@@ -242,7 +239,23 @@ const afterWorkerFinished = function (worker) {
     if (hope > 0) {
         return;
     }
-    const workerStore = worker.workerStore || workers;
+    const workerStore = worker.workerStore;
+    delete workerStore[worker.name];
+};
+
+
+const afterWorkerErrored = function (worker) {
+    /* stop everything */
+    worker.inputQueue = undefined;
+    let length = worker.resolveRejectQueue.length;
+    while (length !== 0) {
+        const [resolve, reject] = (worker.resolveRejectQueue.shift());
+        reject(`request to worker canceled because an error occured before`);
+        length = worker.resolveRejectQueue.length;
+    }
+
+    forceTerminateWorker(worker);
+    const workerStore = worker.workerStore;
     delete workerStore[worker.name];
 };
 
@@ -258,7 +271,7 @@ const addEventListenerToWorker = function (worker) {
         } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
             const error = message.error;
             reject(error);
-            afterWorkerFinished(worker);
+            afterWorkerErrored(worker);
         }
     });
     worker.hasEventListener = true;
@@ -274,9 +287,9 @@ const prepareWorkerTimeOut = function (worker, resolve, reject, preparedInput) {
     setTimeout(function () {
         // if the resolveRejectQueue still includes the resolve, it means it has not yet
         // resolved
-        if (worker.resolveRejectQueue.findIndex(function ([resolveX]) {
-            return resolve === resolveX;
-        }) !== -1) {
+        if (worker.resolveRejectQueue.some(function ([resolveI]) {
+            return resolve === resolveI;
+        })) {
             /*const discardedResolve = */
             worker.resolveRejectQueue.shift();
             // forceTerminateWorker, because we don't care anymore about the result
