@@ -619,6 +619,10 @@ Feel free to open issue to know more.
 
 ### Updates
 
+#### 5.0.0
+
+Symbol is expected to be defined. Cleanup behaviour after error occurs, instead of never settled promised.
+
 #### 4.0.3
 
 Now importable with require. See built/worka_require.js
