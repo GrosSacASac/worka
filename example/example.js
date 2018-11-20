@@ -5,14 +5,14 @@
 
 
 import {registerWorker, WORKA_SYMBOLS, work} from "../source/worka.js";
-import d from "./node_modules/dom99/built/dom99Module.js";
+import * as d from "./node_modules/dom99/built/dom99ES.js";
 import {
     doNTimes,
     chainPromises,
     chainPromiseNTimes,
-    timeCallback,
+    timeFunction,
     timePromise,
-    fillArrayWithFunctionResult
+    arrayWithResults
     } from "./node_modules/utilsac/utility.js";
 import estimatePi from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
@@ -155,7 +155,7 @@ d.functions.remoteServer  = function () {
 
 d.functions.withOutWebWorker = function () {
     let result;
-    const duration = timeCallback(function () {
+    const duration = timeFunction(function () {
         result = estimatePi(precision);
     });
     d.feed({
@@ -165,7 +165,6 @@ d.functions.withOutWebWorker = function () {
 };
 
 d.functions.runFullTestSuite = function () {
-
     chainPromises([
         testWithoutWorker,
         testWithRemoteServer,
@@ -198,10 +197,10 @@ const testWithoutWorker = function () {
         results: []
     };
 
-    aggregates.totalTime = timeCallback(function () {
+    aggregates.totalTime = timeFunction(function () {
         doNTimes(function () {
             let piEstimation;
-            const duration = timeCallback(function () {
+            const duration = timeFunction(function () {
                 piEstimation = estimatePi(precision);
             });
             aggregates.results.push({
@@ -212,7 +211,7 @@ const testWithoutWorker = function () {
             aggregates.totalComputationTime += duration;
         }, SAMPLE_SIZE);
     });
-    addAggregatesStats(aggregates)
+    addAggregatesStats(aggregates);
 
     return Promise.resolve(aggregates);
 };
@@ -252,7 +251,7 @@ const testWithRemoteServer = function () {
     }).then(function ({timeElapsed, value}) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
-        addAggregatesStats(aggregates)
+        addAggregatesStats(aggregates);
         return aggregates;
     });
 };
@@ -319,7 +318,7 @@ const testWithWorkerCreatedEveryTime = function () {
 
     const workerWork = function() {
         return timePromise(function() {
-            return work("getPiEstimationForceRestart", precision);
+            return work("getPiEstimationForceRestart", precision).catch(console.error);
         }).then(function ({timeElapsed, value}) {
             aggregates.totalComputationTime += timeElapsed;
             return {
@@ -353,7 +352,7 @@ const testWithWorker = function () {
 
     const workerWork = function() {
         return timePromise(function() {
-            return work("getPiEstimation", precision);
+            return work("getPiEstimation", precision).catch(console.error);
         }).then(function ({timeElapsed, value}) {
             aggregates.totalComputationTime += timeElapsed;
             return {
@@ -387,7 +386,7 @@ const testWithWorkerAutoSplit = function () {
 
     const workerWork = function() {
         return timePromise(function() {
-            return work("getPiEstimation", precision);
+            return work("getPiEstimation", precision).catch(console.error);
         }).then(function ({timeElapsed, value}) {
             aggregates.totalComputationTime += timeElapsed;
             return {
@@ -399,7 +398,7 @@ const testWithWorkerAutoSplit = function () {
     };
 
     return timePromise(function () {
-        const allPromises = fillArrayWithFunctionResult(workerWork, SAMPLE_SIZE);
+        const allPromises = arrayWithResults(workerWork, SAMPLE_SIZE);
         return Promise.all(allPromises);
     }).then(function ({timeElapsed, value}) {
         aggregates.results = value;

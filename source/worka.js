@@ -179,11 +179,11 @@ self.addEventListener(\`message\`, function(event) {
 };
 
 const instanciateWorker = function (worker) {
-    const decoratedAsString = worker.decoratedAsString;
     let workerObjectURL;
     if (worker.workerObjectURL) {
         workerObjectURL = worker.workerObjectURL;
     } else {
+        const decoratedAsString = worker.decoratedAsString;
         const workerBlob = new Blob([decoratedAsString], WORKA_SYMBOLS.JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
@@ -340,7 +340,8 @@ const registerWorker = function (options, workerStore = workers) {
     const worker = {
         ...WORKER_DEFAULT_OPTIONS,
         ...options,
-        ...WORKER_INITIAL_SETTINGS
+        ...WORKER_INITIAL_SETTINGS,
+        workerStore
     };
     worker.resolveRejectQueue = [];
     if (worker.timeOut && worker.hope > 5) {
@@ -369,7 +370,6 @@ const findWorkerWithEmptyQueue = function (workerStore = workers) {
     });
 };
 
-const mock = {resolveRejectQueue: {length: Number.MAX_SAFE_INTEGER}};
 const workerWithLowestresolveRejectQueue = function (workers) {
     return workers.reduce(function (workerWithLowestresolveRejectQueueSoFar, worker) {
         if (
@@ -379,7 +379,7 @@ const workerWithLowestresolveRejectQueue = function (workers) {
             return worker;
         }
         return workerWithLowestresolveRejectQueueSoFar;
-    }, mock);
+    });
 };
 
 const work = function (name, input, workerStore = workers, forceWork = false) {
@@ -426,6 +426,12 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             // the worker has not yet utilized this feature and needs to be initialized
             worker.coWorkers = {};
             worker.nextCoWorkerOptions = Object.assign({}, worker, {
+                instanciated: false,
+                hasEventListener: false,
+                lazy: 10,
+                hope: 1,
+                coWorkers: undefined,
+                max: 1,
                 name: `0`,
                 workerStore: worker.coWorkers
             });

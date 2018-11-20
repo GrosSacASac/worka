@@ -26,23 +26,18 @@ workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
 
 const workers = {};
 
-let symbol = 0;
-const symbolGenerator = function () {
-    symbol += 1;
-    return symbol;
-};
 
 const WORKA_SYMBOLS = {
     // loadMode
-    STRING: symbolGenerator(),
-    DECORATED: symbolGenerator(),
-    FUNCTION: symbolGenerator(),
-    MULTI_FUNCTION: symbolGenerator(),
-    FILE: symbolGenerator(),
-    DECORATED_FILE: symbolGenerator(),
+    STRING: Symbol(),
+    DECORATED: Symbol(),
+    FUNCTION: Symbol(),
+    MULTI_FUNCTION: Symbol(),
+    FILE: Symbol(),
+    DECORATED_FILE: Symbol(),
     // errors
-    NO_SUPPORT_ERROR: symbolGenerator(),
-    TIME_OUT_ERROR: symbolGenerator(),
+    NO_SUPPORT_ERROR: Symbol(),
+    TIME_OUT_ERROR: Symbol(),
     SPLIT: `/`,
     JS_MIME: {type: `text/javascript`}
 };
@@ -74,7 +69,9 @@ const WORKER_INITIAL_SETTINGS = {
     instance: undefined,
     awakened: false,
     hasEventListener: false,
-    resolveRejectQueue: undefined // []
+    resolveRejectQueue: undefined,
+    inputQueue: undefined,
+    workerStore: workers
 };
 
 const loadWorker = function (worker) {
@@ -159,11 +156,11 @@ self.addEventListener(\`message\`, function(event) {
 };
 
 const instanciateWorker = function (worker) {
-    const decoratedAsString = worker.decoratedAsString;
     let workerObjectURL;
     if (worker.workerObjectURL) {
         workerObjectURL = worker.workerObjectURL;
     } else {
+        const decoratedAsString = worker.decoratedAsString;
         const workerBlob = new Blob([decoratedAsString], WORKA_SYMBOLS.JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
@@ -219,8 +216,19 @@ const afterWorkerFinished = function (worker) {
     if (hope > 0) {
         return;
     }
-    const workerStore = worker.workerStore || workers;
-    delete workerStore[worker.name];
+    delete worker.workerStore[worker.name];
+};
+
+
+const afterWorkerErrored = function (worker) {
+    /* stop everything */
+    const error = `request to worker canceled because an error occured before`;
+    worker.resolveRejectQueue.forEach(function ([resolve, reject]) {
+        reject(error);
+    });
+
+    forceTerminateWorker(worker);
+    delete worker.workerStore[worker.name];
 };
 
 const addEventListenerToWorker = function (worker) {
@@ -235,7 +243,7 @@ const addEventListenerToWorker = function (worker) {
         } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
             const error = message.error;
             reject(error);
-            afterWorkerFinished(worker);
+            afterWorkerErrored(worker);
         }
     });
     worker.hasEventListener = true;
@@ -251,9 +259,9 @@ const prepareWorkerTimeOut = function (worker, resolve, reject, preparedInput) {
     setTimeout(function () {
         // if the resolveRejectQueue still includes the resolve, it means it has not yet
         // resolved
-        if (worker.resolveRejectQueue.findIndex(function ([resolveX]) {
-            return resolve === resolveX;
-        }) !== -1) {
+        if (worker.resolveRejectQueue.some(function ([resolveI]) {
+            return resolve === resolveI;
+        })) {
             /*const discardedResolve = */
             worker.resolveRejectQueue.shift();
             // forceTerminateWorker, because we don't care anymore about the result
@@ -309,7 +317,8 @@ const registerWorker = function (options, workerStore = workers) {
     const worker = {
         ...WORKER_DEFAULT_OPTIONS,
         ...options,
-        ...WORKER_INITIAL_SETTINGS
+        ...WORKER_INITIAL_SETTINGS,
+        workerStore
     };
     worker.resolveRejectQueue = [];
     if (worker.timeOut && worker.hope > 5) {
@@ -338,7 +347,6 @@ const findWorkerWithEmptyQueue = function (workerStore = workers) {
     });
 };
 
-const mock = {resolveRejectQueue: {length: Number.MAX_SAFE_INTEGER}};
 const workerWithLowestresolveRejectQueue = function (workers) {
     return workers.reduce(function (workerWithLowestresolveRejectQueueSoFar, worker) {
         if (
@@ -348,7 +356,7 @@ const workerWithLowestresolveRejectQueue = function (workers) {
             return worker;
         }
         return workerWithLowestresolveRejectQueueSoFar;
-    }, mock);
+    });
 };
 
 const work = function (name, input, workerStore = workers, forceWork = false) {
@@ -395,6 +403,12 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             // the worker has not yet utilized this feature and needs to be initialized
             worker.coWorkers = {};
             worker.nextCoWorkerOptions = Object.assign({}, worker, {
+                instanciated: false,
+                hasEventListener: false,
+                lazy: 10,
+                hope: 1,
+                coWorkers: undefined,
+                max: 1,
                 name: `0`,
                 workerStore: worker.coWorkers
             });

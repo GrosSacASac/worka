@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "example",
   "main": "example.js",
   "scripts": {
@@ -9,9 +9,9 @@
   "author": "author",
   "license": "ISC",
   "dependencies": {
-    "dom99": "^11.1.0",
-    "express": "^4.16.2",
+    "dom99": "^17.0.1",
+    "express": "^4.16.4",
     "promise-memoize": "^1.2.1",
-    "utilsac": "^3.0.2"
+    "utilsac": "^9.5.0"
   }
 }
