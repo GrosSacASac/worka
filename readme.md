@@ -619,6 +619,11 @@ Feel free to open issue to know more.
 
 ### Updates
 
+#### 6.0.0
+
+built/worka_script.js and built/worka_require.js removed from git.
+Use npm or run build yourself.
+
 #### 5.0.0
 
 Symbol is expected to be defined. Cleanup behaviour after error occurs, instead of never settled promised.
