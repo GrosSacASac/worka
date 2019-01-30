@@ -1,7 +1,11 @@
 "use strict";
-const {Worker} = require('webworker-threads');
+const {Worker} = require("worker_threads"); // node 10+
 
-global.Worker = Worker; // patch nodejs
+
+// patch
+global.Worker = Worker;
+console.warn("find Blob polyfill first\n");
+// global.Blob =
 
 const { registerWorker, WORKA_SYMBOLS, work } = require("../built/worka_require.js");
 

@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Easy web workers modelled as HTTP API endpoints",
   "main": "built/worka_require.js",
   "module": "source/worka.js",
@@ -13,7 +13,8 @@
     "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
     "buildCommonJs": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
     "prepublishOnly": "npm run buildBrowser && npm run buildCommonJs",
-    "try": "node example/index.js 8080"
+    "try": "node example/index.js 8080",
+    "tryNode": "node example-node/simplest_usage.js"
   },
   "repository": {
     "type": "git",
