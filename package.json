@@ -4,9 +4,6 @@
   "description": "web workers results in promises",
   "main": "built/worka_require.js",
   "module": "source/worka.js",
-  "directories": {
-    "example": "example"
-  },
   "scripts": {
     "test": "echo See examples",
     "buildExample": "rollup example/estimatePi.js --output.format cjs --output.file example/estimatePiNode.js",
