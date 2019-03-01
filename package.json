@@ -1,7 +1,7 @@
 {
   "name": "worka",
-  "version": "6.1.0",
-  "description": "Easy web workers modelled as HTTP API endpoints",
+  "version": "6.1.1",
+  "description": "web workers results in promises",
   "main": "built/worka_require.js",
   "module": "source/worka.js",
   "directories": {
@@ -21,7 +21,12 @@
     "type": "git",
     "url": "git://github.com/GrosSacASac/worka.git"
   },
-  "author": "GrosSacASacs",
+  "files": [
+    "built",
+    "source",
+    "readme.md",
+    "LICENSE.txt",
+  ],
   "license": "BSL-1.0",
   "devDependencies": {
     "rollup": "^1.1.2",
