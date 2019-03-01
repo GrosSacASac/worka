@@ -22,7 +22,7 @@
     "built",
     "source",
     "readme.md",
-    "LICENSE.txt",
+    "LICENSE.txt"
   ],
   "license": "BSL-1.0",
   "devDependencies": {

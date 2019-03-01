@@ -619,7 +619,7 @@ Feel free to open issue to know more.
 
 ### Updates
 
-#### 6.0.1
+#### 6.1.0
 
 build-time decorateWorker exposed,  WORKA_SYMBOLS.FILE loadMode support
 
