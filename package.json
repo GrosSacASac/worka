@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "6.0.2",
+  "version": "6.1.0",
   "description": "Easy web workers modelled as HTTP API endpoints",
   "main": "built/worka_require.js",
   "module": "source/worka.js",
@@ -14,7 +14,8 @@
     "buildCommonJs": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
     "prepublishOnly": "npm run buildBrowser && npm run buildCommonJs",
     "try": "node example/index.js 8080",
-    "tryNode": "node example-node/simplest_usage.js"
+    "prepareNodeExample": "node --experimental-modules source/decorateWorker.mjs example-node/sort.js example-node/sort_worka.js",
+    "tryNode": "npm run prepareNodeExample && node example-node/file_usage.js"
   },
   "repository": {
     "type": "git",
@@ -23,10 +24,12 @@
   "author": "GrosSacASacs",
   "license": "BSL-1.0",
   "devDependencies": {
-    "rollup": "^1.1.2"
+    "rollup": "^1.1.2",
+    "utilsac": "^9.7.2"
   },
   "keywords": [
-    "web-worker",
+    "web",
+    "worker",
     "promise"
   ]
 }
