@@ -1,27 +1,18 @@
-/*worka.js*/
-
-/*
-const URL = window.URL || window.webkitURL;
-
-optimisation ideas
+/* optimisation ideas
 
 remove unused things inside worker, like originalAsString if it is never going to be used again
 
-could change workerWithLowestresolveRejectQueue, instead of guessing what worker will be idle the soonest,
+could change workerWithLowestResolveQueue, instead of guessing what worker will be idle the soonest,
 we could wait for the next worker to become idle, could be better than guessing,
 especially for function that have variability in time needed for execution
 
 proper de-registration for failures ?
 
 alternative feature detection
-https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js
-*/
+https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js */
 
 /*jslint
-    es6, maxerr: 50, browser, devel, fudge, maxlen: 100
-*/
-/*global
-    window, Worker, URL, Blob
+    browser, devel, fudge
 */
 
 
@@ -30,20 +21,19 @@ export {registerWorker, work, workerSupport, WORKA_SYMBOLS};
 const workerSupport = {
 
     basic: (typeof Worker === `function`),
-    transferrables: undefined
+    // transferables: undefined
     // encapsulation: undefined // Worker inside Worker
 };
 
-// transferrables feature detection
-// a priori not supported in IE 10, 11
-/*
+/* transferables feature detection
+a priori not supported in IE 10, 11
 const smallArrayBuffer = new ArrayBuffer(1);
 const emptyWorker = new Worker(`../empty-worker.js`);
 
 emptyWorker.postMessage(smallArrayBuffer, [smallArrayBuffer]);
 
 // length must be set to 0 in this context
-workerSupport.transferrables = (smallArrayBuffer.byteLength === 0)
+workerSupport.transferables = (smallArrayBuffer.byteLength === 0)
 
 */
 
@@ -81,7 +71,7 @@ const WORKER_DEFAULT_OPTIONS = {
     timeOut: false
 };
 
-// separate from WORKER_DEFAULT_OPTIONS, impossible to overwrite with options in registerWorker
+// impossible to accidentally overwrite
 const WORKER_INITIAL_SETTINGS = {
     loaded: false,
     originalAsString: ``,
@@ -109,8 +99,8 @@ const loadWorker = function (worker) {
     worker.loaded = true;
 };
 
-const useStrict = `"use strict";`
-/* conver to String because errorEvent can not be cloned*/
+const useStrict = `"use strict";`;
+/* convert to String because errorEvent can not be cloned*/
 const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
     errorEvent.preventDefault();
     let asString;
@@ -141,7 +131,7 @@ self.addEventListener(\`message\`, function(event) {
     const functionName = message.functionName;
     if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
         self.postMessage({
-            error: \`"\${functionName}" not found\`
+            error: \`\${functionName} not found\`
         });
         return;
     }
@@ -370,21 +360,21 @@ const findWorkerWithEmptyQueue = function (workerStore = workers) {
     });
 };
 
-const workerWithLowestresolveRejectQueue = function (workers) {
-    return workers.reduce(function (workerWithLowestresolveRejectQueueSoFar, worker) {
+const workerWithLowestResolveQueue = function (workers) {
+    return workers.reduce(function (workerWithLowestResolveQueueSoFar, worker) {
         if (
             worker.resolveRejectQueue.length <
-            workerWithLowestresolveRejectQueueSoFar.resolveRejectQueue.length
+            workerWithLowestResolveQueueSoFar.resolveRejectQueue.length
         ) {
             return worker;
         }
-        return workerWithLowestresolveRejectQueueSoFar;
+        return workerWithLowestResolveQueueSoFar;
     });
 };
 
 const work = function (name, input, workerStore = workers, forceWork = false) {
-    // is overloaded on many levels, could benefit from refactoring
-    // functionName not needed ?
+    /* is overloaded on many levels, could benefit from refactoring
+    functionName not needed ? */
     if (!workerSupport.basic) {
         return Promise.reject(WORKA_SYMBOLS.NO_SUPPORT_ERROR);
     }
@@ -404,7 +394,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
         }
     }
     if (!Object.prototype.hasOwnProperty.call(workerStore, workerName)) {
-        return Promise.reject(`"${workerName}" not registered`);
+        return Promise.reject(`${workerName} not registered`);
     }
     if (Object.prototype.hasOwnProperty.call(input, `input`)) {
         // already prepared
@@ -420,8 +410,8 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     const worker = workerStore[workerName];
 
     if (worker.stateless && worker.resolveRejectQueue.length !== 0 && !forceWork) {
-        // the worker is already doing something and it is stateless
-        // only stateless worker can duplicate themselves
+        /* the worker is already doing something and it is stateless
+        only stateless worker can duplicate themselves */
         if (!worker.coWorkers) {
             // the worker has not yet utilized this feature and needs to be initialized
             worker.coWorkers = {};
@@ -453,17 +443,17 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
 
         // there are no idle coworkers
         if ((coWorkerCount + 1) < worker.max) {
-            // the worker count is below maximum, we can create more
-            // + 1 is for the parent worker itself
+            /* the worker count is below maximum, we can create more
+            + 1 is for the parent worker itself */
             const nameNow = worker.nextCoWorkerOptions.name;
             registerWorker(worker.nextCoWorkerOptions, worker.coWorkers);
             worker.nextCoWorkerOptions.name = String(Number(nameNow) + 1);
             return work([nameNow, functionName], preparedInput, worker.coWorkers);
         }
 
-        // search for the worker with the lowest resolution queue and delegate to it
-        // use a boolean to avoid infinite recursion loop
-        const bestWorker = workerWithLowestresolveRejectQueue(
+        /* search for the worker with the lowest resolution queue and delegate to it
+        use a boolean to avoid infinite recursion loop */
+        const bestWorker = workerWithLowestResolveQueue(
             Object.values(worker.coWorkers).concat(worker)
         );
         return work([bestWorker.name, functionName], preparedInput, bestWorker.workerStore, true);
