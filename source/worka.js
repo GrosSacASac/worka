@@ -16,7 +16,7 @@ https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-we
 */
 
 
-export {registerWorker, work, workerSupport, WORKA_SYMBOLS};
+export {registerWorker, work, workerSupport, WORKA_SYMBOLS, decorateWorker};
 
 const workerSupport = {
 
@@ -169,6 +169,11 @@ self.addEventListener(\`message\`, function(event) {
 };
 
 const instanciateWorker = function (worker) {
+    worker.instanciated = true;
+    if (worker.loadMode === WORKA_SYMBOLS.FILE) {
+        worker.instance = new Worker(worker.resource);
+        return;
+    }
     let workerObjectURL;
     if (worker.workerObjectURL) {
         workerObjectURL = worker.workerObjectURL;
@@ -177,7 +182,7 @@ const instanciateWorker = function (worker) {
         const workerBlob = new Blob([decoratedAsString], WORKA_SYMBOLS.JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
-    const instance = new Worker(workerObjectURL);
+    worker.instance = new Worker(workerObjectURL);
     if (worker.hope > 5 || worker.hope < 1) {
         // remove for debugging
         URL.revokeObjectURL(workerObjectURL);
@@ -185,8 +190,6 @@ const instanciateWorker = function (worker) {
         // keep for reuse
         worker.workerObjectURL = workerObjectURL;
     }
-    worker.instance = instance;
-    worker.instanciated = true;
 };
 
 const forceAwakenWorker = function (worker) {
