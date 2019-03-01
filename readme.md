@@ -138,7 +138,7 @@ Any value that can help build the worker. Must be in sync with `loadMode`. For e
 #### loadMode (required)
 
 
-Possible Values: `WORKA_SYMBOLS.FUNCTION, WORKA_SYMBOLS.STRING, WORKA_SYMBOLS.MULTI_FUNCTION`
+Possible Values: `WORKA_SYMBOLS.FUNCTION, WORKA_SYMBOLS.STRING, WORKA_SYMBOLS.MULTI_FUNCTION WORKA_SYMBOLS.FILE`
 
 
 Partial Default
@@ -618,6 +618,10 @@ Feel free to open issue to know more.
 
 
 ### Updates
+
+#### 6.0.1
+
+build-time decorateWorker exposed,  WORKA_SYMBOLS.FILE loadMode support
 
 #### 6.0.0
 
