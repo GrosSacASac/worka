@@ -9,7 +9,6 @@ const makeSendFileAvailable = function (req, res, next) {
 
 const sendFile = function (filePath) {
     const res = this;
-    console.log(filePath);
     createReadStream(filePath).pipe(res);
 };
 
