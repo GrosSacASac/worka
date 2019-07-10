@@ -80,8 +80,10 @@ There is a hard limit (about 1300 kB per message) on the amount of data send and
 ## Import
 
 ```
-// may need to change path
-import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "./worka.js";
+// module
+import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "worka";
+// node11-
+const {registerWorker, work, WORKA_SYMBOLS, workerSupport} = require("worka/built/worka_require.js");
 ```
 
 ## API
@@ -618,6 +620,10 @@ Feel free to open issue to know more.
 
 
 ### Updates
+
+#### 7.0.0
+
+Move to ES Module first
 
 #### 6.1.0
 

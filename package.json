@@ -1,18 +1,17 @@
 {
   "name": "worka",
-  "version": "6.1.1",
+  "version": "7.0.0",
+  "type": "module",
+  "main": "source/worka.js",
   "description": "web workers results in promises",
-  "main": "built/worka_require.js",
-  "module": "source/worka.js",
   "scripts": {
-    "test": "echo See examples",
-    "buildExample": "rollup example/estimatePi.js --output.format cjs --output.file example/estimatePiNode.js",
     "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
     "buildCommonJs": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
     "prepublishOnly": "npm run buildBrowser && npm run buildCommonJs",
-    "try": "node example/index.js 8080",
-    "prepareNodeExample": "node --experimental-modules source/decorateWorker.mjs example-node/sort.js example-node/sort_worka.js",
-    "tryNode": "npm run prepareNodeExample && node example-node/file_usage.js"
+    "try": "node --experimental-modules example/index.js 8080",
+    "prepareNodeExample": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
+    "runNodeExample": "node --experimental-modules example-node/file_usage.js",
+    "tryNode": "npm run prepareNodeExample && npm run runNodeExample"
   },
   "repository": {
     "type": "git",
@@ -25,9 +24,10 @@
     "LICENSE.txt"
   ],
   "license": "BSL-1.0",
+  "dependencies": {},
   "devDependencies": {
-    "rollup": "^1.1.2",
-    "utilsac": "^9.7.2"
+    "filesac": "^11.0.0",
+    "rollup": "^1.16.7"
   },
   "keywords": [
     "web",

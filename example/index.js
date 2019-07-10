@@ -1,17 +1,24 @@
-"use strict";
+import polka from "polka";
+import estimatePi from "./estimatePi.js";
+import { makeSendFileAvailable } from "./sendFile.js";
+import serveStatic from "serve-static";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-const ARTIFICIAL_DELAY = 50; // ms
-const EXPLANATION = "using artificial delay to simulate real network: " + ARTIFICIAL_DELAY + "ms";
-const express = require('express')
-const estimatePi = require("./estimatePiNode.js");
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const parent = dirname(__dirname);
+const serveStaticHere = serveStatic(parent);
 
 const commandLineInput = process.argv.slice(2);
 const [port] = commandLineInput;
+const ARTIFICIAL_DELAY = 50; // ms
+const EXPLANATION = "using artificial delay to simulate real network: " + ARTIFICIAL_DELAY + "ms";
 
 const PORT = port || 3000;
 const realSimulation = true;
-const app = express()
+const app = polka()
 
 
 app.get('/estimatePi', function (req, res) {
@@ -64,11 +71,12 @@ app.get('/example/estimatePiWorker.js', function (req, res) {
     }, ARTIFICIAL_DELAY);
 });
 
-app.use(express.static('./'));
+app.use(serveStaticHere);
+app.use(makeSendFileAvailable);
 app.listen(PORT, function () {
-  console.log(
-    `Example app listening on port ${PORT}! ,
+    console.log(
+        `Example app listening on port ${PORT}! ,
     open
 http://localhost:${PORT}/example/example.html`
-  );
+    );
 });

@@ -16,7 +16,7 @@ https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-we
 */
 
 
-export {registerWorker, work, workerSupport, WORKA_SYMBOLS, decorateWorker};
+export { registerWorker, work, workerSupport, WORKA_SYMBOLS, decorateWorker };
 
 const workerSupport = {
 
@@ -52,7 +52,7 @@ const WORKA_SYMBOLS = {
     NO_SUPPORT_ERROR: Symbol(),
     TIME_OUT_ERROR: Symbol(),
     SPLIT: `/`,
-    JS_MIME: {type: `text/javascript`}
+    JS_MIME: { type: `text/javascript` }
 };
 
 let max = 1;
