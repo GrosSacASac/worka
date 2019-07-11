@@ -1,7 +1,7 @@
 {
   "name": "example",
   "type": "module",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "dependencies": {
     "dom99": "^17.3.2",
     "polka": "^0.5.2",

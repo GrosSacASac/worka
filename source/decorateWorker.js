@@ -7,7 +7,8 @@ const [x, y, input, output] = process.argv;
     const originalAsString = await textFileContent(input);
     const worker = {
         originalAsString,
-        decoratedAsString: undefined
+        decoratedAsString: undefined,
+        stateless: true,
     };
     decorateWorker(worker);
 

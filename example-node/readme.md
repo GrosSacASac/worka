@@ -1,4 +1,6 @@
 # use worka in NodeJs
 
+**Warning** Does not work
 
-wip
+- .addEventListener is not defined
+- self is not defined in a Worker
