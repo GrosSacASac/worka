@@ -19,5 +19,7 @@ work(`sort`, [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
         console.error(`missing support`);
     } else if (error === WORKA_SYMBOLS.TIME_OUT_ERROR) {
         console.error(`time out error`);
+    } else {
+        console.error(error);
     }
 });

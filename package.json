@@ -11,7 +11,8 @@
     "try": "node --experimental-modules example/index.js 8080",
     "prepareNodeExample": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
     "runNodeExample": "node --experimental-modules example-node/file_usage.js",
-    "tryNode": "npm run prepareNodeExample && npm run runNodeExample"
+    "tryNode": "npm run prepareNodeExample && npm run runNodeExample",
+    "tryDeno": "deno example-deno/file_usage.js"
   },
   "repository": {
     "type": "git",

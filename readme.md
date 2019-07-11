@@ -407,12 +407,12 @@ work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
     console.log(result);
 }).catch(function (reason) {
     if (reason === WORKA_SYMBOLS.NO_SUPPORT_ERROR) {
-        console.log("Web Worker API not supported");
+        console.error("Web Worker API not supported");
     } else if (reason === WORKA_SYMBOLS.TIME_OUT_ERROR) {
         // can only happen with a worker registered with a timeOut
-        console.log("Took longer than expected");
+        console.error("Took longer than expected");
     } else {
-        console.log("Error:", reason);
+        console.error("other error", reason);
     }
 });
 ```
