@@ -35,7 +35,7 @@ Inspired by the clean stateless HTTP architecture, something comes in, something
 ### Shortest Example
 
 
-```
+```html
 <!doctype html>
 <html lang="en">
     <head>
@@ -45,7 +45,11 @@ Inspired by the clean stateless HTTP architecture, something comes in, something
     <body>
         <p>Open console</p>
         <script type="module">
-import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "./worka.js";
+import {
+    registerWorker,
+    work,
+    FUNCTION,
+} from "worka";
 
 const sort = function (array) {
     array.sort();
@@ -55,7 +59,7 @@ const sort = function (array) {
 registerWorker({
     name: "sort",
     resource: sort,
-    loadMode: WORKA_SYMBOLS.FUNCTION
+    loadMode: FUNCTION,
 });
 
 work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
@@ -66,7 +70,6 @@ work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
     </script>
     </body>
 </html>
-
 ```
 
 
@@ -79,18 +82,33 @@ There is a hard limit (about 1300 kB per message) on the amount of data send and
 
 ## Import
 
-```
+```js
 // module
-import {registerWorker, work, WORKA_SYMBOLS, workerSupport} from "worka";
+import {
+    registerWorker,
+    work,
+    workerSupport,
+    decorateWorker,
+
+    STRING,
+    DECORATED,
+    FUNCTION,
+    MULTI_FUNCTION,
+    FILE,
+    DECORATED_FILE,
+    NO_SUPPORT_ERROR,
+    TIME_OUT_ERROR,
+} from "worka";
+
 // node11-
-const {registerWorker, work, WORKA_SYMBOLS, workerSupport} = require("worka/built/worka_require.js");
+const {registerWorker, work, ...} = require("worka/built/worka_require.js");
 ```
 
 ## API
 
  * [registerWorker](#registerWorker)
  * [work](#work)
- * [WORKA_SYMBOLS](#worka_symbols)
+ * [WORKA SYMBOLS](#worka_symbols)
  * [workerSupport](#workersupport)
 
 
@@ -113,7 +131,7 @@ Describes the worker. Example:
 {
     name: "workerName",
     resource: myFunction,
-    loadMode: WORKA_SYMBOLS.FUNCTION,
+    loadMode: FUNCTION,
     lazy: 5,
     hope: 6,
     max: navigator.hardwareConcurrency || 1,
@@ -140,7 +158,7 @@ Any value that can help build the worker. Must be in sync with `loadMode`. For e
 #### loadMode (required)
 
 
-Possible Values: `WORKA_SYMBOLS.FUNCTION, WORKA_SYMBOLS.STRING, WORKA_SYMBOLS.MULTI_FUNCTION WORKA_SYMBOLS.FILE`
+Possible Values: `FUNCTION, STRING, MULTI_FUNCTION FILE`
 
 
 Partial Default
@@ -148,15 +166,15 @@ Partial Default
 
 ```
 {
-    loadMode: WORKA_SYMBOLS.STRING
+    loadMode: STRING
 }
 ```
 
 
-To use multiple functions inside 1 Worker use `WORKA_SYMBOLS.MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function.
+To use multiple functions inside 1 Worker use `MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function.
 
 
-```
+```js
 const returnsMultipleFunctions = function () {
 
     const sort = function (array) {
@@ -178,7 +196,7 @@ const returnsMultipleFunctions = function () {
 registerWorker({
     name: "test",
     resource: returnsMultipleFunctions,
-    loadMode: WORKA_SYMBOLS.MULTI_FUNCTION
+    loadMode: MULTI_FUNCTION
 });
 
 work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
@@ -208,7 +226,7 @@ Partial Default
 Pure functions are stateless. Function that change variables other than the return value are statefull (Worker that do not use transferable, have a copy of the input, not the input itself, which means a top level function inside a worker can change the __copied__ input and still be pure). Statefull component will never auto split into multiple workers. Before using statefull workers everywhere, consider moving the state up; moving the state in the main thread, mutate it only there, and providing it to the worker each time alongside the regular input. There is no need to set `initialize`. To provide a statefull function use `stateless: false` and the following format:
 
 
-```
+```js
 // Also known as the generator pattern
 const statefullGenerator = function () {
     // state declaration and initialization
@@ -226,7 +244,7 @@ const statefullGenerator = function () {
 registerWorker({
     name: "stateTest",
     resource: statefullGenerator,
-    loadMode: WORKA_SYMBOLS.FUNCTION,
+    loadMode: FUNCTION,
     stateless: false
 });
 
@@ -254,8 +272,7 @@ Partial Default
 }
 ```
 
-```
-
+```js
 const functionReturner = function () {
 
     const largeConstantInitialization = [
@@ -280,7 +297,7 @@ const functionReturner = function () {
 registerWorker({
     name: "initializationTest",
     resource: functionReturner,
-    loadMode: WORKA_SYMBOLS.FUNCTION,
+    loadMode: FUNCTION,
     initialize: true
 });
 
@@ -363,7 +380,7 @@ Partial Default
 `false` or a positive integer `Number`
 
 
-By default there is no time out. The time out timing start just after work(...).then(...). If the operation takes longer the Promise will reject with WORKA_SYMBOLS.TIME_OUT_ERROR.
+By default there is no time out. The time out timing start just after work(...).then(...). If the operation takes longer the Promise will reject with TIME_OUT_ERROR.
 
 
 Partial Default
@@ -402,13 +419,13 @@ Partial Default
 Returns a promise that eventually resolves with the result or fails. Use registerWorker first !
 
 
-```
+```js
 work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
     console.log(result);
 }).catch(function (reason) {
-    if (reason === WORKA_SYMBOLS.NO_SUPPORT_ERROR) {
+    if (reason === NO_SUPPORT_ERROR) {
         console.error("Web Worker API not supported");
-    } else if (reason === WORKA_SYMBOLS.TIME_OUT_ERROR) {
+    } else if (reason === TIME_OUT_ERROR) {
         // can only happen with a worker registered with a timeOut
         console.error("Took longer than expected");
     } else {
@@ -427,12 +444,6 @@ the name of the worker or `${name}/${functionName}`.
 
 
 The input that will be provided to the worker. To pass multiple inputs use a container, such as an Array or an Object.
-
-
-### WORKA_SYMBOLS
-
-
-*Read-only* Object containing constant values used at various places for strict equality comparisons.
 
 
 ### workerSupport
@@ -457,7 +468,7 @@ When web workers are not supported the promise from `work` will reject. It is po
 
 ### Worker First, network second
 
-```
+```js
 const fetchFromNetwork = function (precision) {
     return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
         return response.text();
@@ -468,7 +479,7 @@ const fetchFromNetwork = function (precision) {
 };
 
 const promise = work("getPiEstimation", precision).catch(function (error) {
-    if (error === WORKA_SYMBOLS.NO_SUPPORT_ERROR) {
+    if (error === NO_SUPPORT_ERROR) {
         return fetchFromNetwork(precision);
     } else {
         throw error;
@@ -482,7 +493,7 @@ const promise = work("getPiEstimation", precision).catch(function (error) {
 
 
 
-```
+```js
 const promise = fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
     return response.text();
 }).then(function (resultString) {
@@ -497,7 +508,7 @@ const promise = fetch(`../estimatePi?input=${precision}`, {}).then(function (res
 
 Before using `Promise.race`, read about its limitations.
 
-```
+```js
 const fetchFromNetwork = function (precision) {
     return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
         return response.text();
@@ -526,17 +537,15 @@ Memoize is not included by default for maximum flexibility. It is possible to me
 ```npm install promise-memoize```
 
 
-```
-// imports
-const promiseMemoize = require("promise-memoize");
-const { registerWorker, work, WORKA_SYMBOLS} = require("worka"); // require not supported yet
+```js
+import promiseMemoize from "promise-memoize";
 
 
 // register worker
 registerWorker({
     name: "getPiEstimation",
     resource: estimatePi,
-    loadMode: WORKA_SYMBOLS.FUNCTION
+    loadMode: FUNCTION
 });
 
 // create memoized version
@@ -551,7 +560,6 @@ memoized(1000).then(...);
 
 // note it is also possible to memoize everything like this
 const memoizedWork = promiseMemoize(work);
-
 ```
 
 
@@ -643,7 +651,7 @@ Move to ES Module first
 
 #### 6.1.0
 
-build-time decorateWorker exposed,  WORKA_SYMBOLS.FILE loadMode support
+build-time decorateWorker exposed, FILE loadMode support
 
 #### 6.0.0
 

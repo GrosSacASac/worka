@@ -8,7 +8,7 @@
         <p>Open console. If nothing show up try with a browser that supports modules. And launch form localhost not file system</p>
         <script type="module">
 
-import { registerWorker, WORKA_SYMBOLS, work } from "../source/worka.js";
+import { registerWorker, STRING, work } from "../source/worka.js";
 
 
 // triggers a syntax error, which needs to be fixed (not catched)
@@ -21,7 +21,7 @@ console.log("1");
 registerWorker({
     name: "sort",
     resource: sort,
-    loadMode: WORKA_SYMBOLS.STRING
+    loadMode: STRING
 });
 
 console.log("2");

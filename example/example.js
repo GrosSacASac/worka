@@ -4,7 +4,7 @@
 */
 
 
-import {registerWorker, WORKA_SYMBOLS, work} from "../source/worka.js";
+import { registerWorker, FUNCTION, work } from "../source/worka.js";
 import * as d from "./node_modules/dom99/built/dom99ES.js";
 import {
     doNTimes,
@@ -13,7 +13,7 @@ import {
     timeFunction,
     timePromise,
     arrayWithResults
-    } from "./node_modules/utilsac/utility.js";
+} from "./node_modules/utilsac/utility.js";
 import estimatePi from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
 
@@ -41,13 +41,13 @@ let precision = precisionFromPrecisionLevel(INITIAL_PRECISION_LEVEL);
 registerWorker({
     name: "getPiEstimation",
     resource: estimatePi,
-    loadMode: WORKA_SYMBOLS.FUNCTION
+    loadMode: FUNCTION
 });
 
 registerWorker({
     name: "getPiEstimationForceRestart",
     resource: estimatePi,
-    loadMode: WORKA_SYMBOLS.FUNCTION,
+    loadMode: FUNCTION,
     hope: 5
 });
 
@@ -61,7 +61,7 @@ d.functions.webWorkerPreloaded = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(estimatePiWorkerURL);
-    worker.addEventListener("message", function(event) {
+    worker.addEventListener("message", function (event) {
         const message = event.data;
         if (message.hasOwnProperty("result")) {
             const result = message.result;
@@ -86,7 +86,7 @@ d.functions.webWorkerNoCache = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL_NO_CACHE);
-    worker.addEventListener("message", function(event) {
+    worker.addEventListener("message", function (event) {
         const message = event.data;
         if (message.hasOwnProperty("result")) {
 
@@ -112,7 +112,7 @@ d.functions.webWorkerWithCache = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
-    worker.addEventListener("message", function(event) {
+    worker.addEventListener("message", function (event) {
         const message = event.data;
         if (message.hasOwnProperty("result")) {
 
@@ -134,7 +134,7 @@ d.functions.webWorkerWithCache = function () {
     });
 };
 
-d.functions.remoteServer  = function () {
+d.functions.remoteServer = function () {
     timePromise(function () {
         return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
             return response.text();
@@ -142,7 +142,7 @@ d.functions.remoteServer  = function () {
             const result = Number(resultString);
             return result;
         });
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         d.feed({
             result: value,
             duration: `Computation time: ${timeElapsed}ms`
@@ -228,7 +228,7 @@ const testWithRemoteServer = function () {
         results: []
     };
 
-    const remoteSeverWork = function() {
+    const remoteSeverWork = function () {
         return timePromise(function () {
             return fetch(`../estimatePi?input=${precision}`, {}).then(function (response) {
                 return response.text();
@@ -236,7 +236,7 @@ const testWithRemoteServer = function () {
                 const result = Number(resultString);
                 return result;
             });
-        }).then(function ({timeElapsed, value}) {
+        }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
                 precision,
@@ -248,7 +248,7 @@ const testWithRemoteServer = function () {
 
     return timePromise(function () {
         return chainPromiseNTimes(remoteSeverWork, SAMPLE_SIZE);
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
         addAggregatesStats(aggregates);
@@ -267,11 +267,11 @@ const testWithRawWorker = function () {
         results: []
     };
 
-    const rawWorkerWork = function() {
+    const rawWorkerWork = function () {
         return new Promise(function (resolve, reject) {
             const startTime = getReferenceTime();
             const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
-            worker.addEventListener("message", function(event) {
+            worker.addEventListener("message", function (event) {
                 const message = event.data;
                 if (message.hasOwnProperty("result")) {
                     const piEstimation = message.result;
@@ -297,7 +297,7 @@ const testWithRawWorker = function () {
 
     return timePromise(function () {
         return chainPromiseNTimes(rawWorkerWork, SAMPLE_SIZE);
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
         addAggregatesStats(aggregates)
@@ -316,10 +316,10 @@ const testWithWorkerCreatedEveryTime = function () {
         results: []
     };
 
-    const workerWork = function() {
-        return timePromise(function() {
+    const workerWork = function () {
+        return timePromise(function () {
             return work("getPiEstimationForceRestart", precision).catch(console.error);
-        }).then(function ({timeElapsed, value}) {
+        }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
                 precision,
@@ -331,7 +331,7 @@ const testWithWorkerCreatedEveryTime = function () {
 
     return timePromise(function () {
         return chainPromiseNTimes(workerWork, SAMPLE_SIZE);
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
         addAggregatesStats(aggregates)
@@ -350,10 +350,10 @@ const testWithWorker = function () {
         results: []
     };
 
-    const workerWork = function() {
-        return timePromise(function() {
+    const workerWork = function () {
+        return timePromise(function () {
             return work("getPiEstimation", precision).catch(console.error);
-        }).then(function ({timeElapsed, value}) {
+        }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
                 precision,
@@ -365,7 +365,7 @@ const testWithWorker = function () {
 
     return timePromise(function () {
         return chainPromiseNTimes(workerWork, SAMPLE_SIZE);
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
         addAggregatesStats(aggregates)
@@ -384,10 +384,10 @@ const testWithWorkerAutoSplit = function () {
         results: []
     };
 
-    const workerWork = function() {
-        return timePromise(function() {
+    const workerWork = function () {
+        return timePromise(function () {
             return work("getPiEstimation", precision).catch(console.error);
-        }).then(function ({timeElapsed, value}) {
+        }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
                 precision,
@@ -400,7 +400,7 @@ const testWithWorkerAutoSplit = function () {
     return timePromise(function () {
         const allPromises = arrayWithResults(workerWork, SAMPLE_SIZE);
         return Promise.all(allPromises);
-    }).then(function ({timeElapsed, value}) {
+    }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
         aggregates.totalTime = timeElapsed;
         addAggregatesStats(aggregates)

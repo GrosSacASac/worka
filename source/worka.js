@@ -12,8 +12,6 @@ export {
     DECORATED_FILE,
     NO_SUPPORT_ERROR,
     TIME_OUT_ERROR,
-    SPLIT,
-    JS_MIME,
 };
 
 const workerSupport = {

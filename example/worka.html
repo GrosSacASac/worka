@@ -8,7 +8,7 @@
         <p>Open console. If nothing show up try with a browser that supports modules. And launch form localhost not file system</p>
         <script type="module">
 
-import { registerWorker, WORKA_SYMBOLS, work } from "../source/worka.js";
+import { registerWorker, FUNCTION, work } from "../source/worka.js";
 
 const sort = function (array) {
     array.sort(); // run time error will trigger the catch
@@ -18,7 +18,7 @@ const sort = function (array) {
 registerWorker({
     name: "sort",
     resource: sort,
-    loadMode: WORKA_SYMBOLS.FUNCTION
+    loadMode: FUNCTION
 });
 
 work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
