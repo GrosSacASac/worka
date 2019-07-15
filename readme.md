@@ -108,7 +108,6 @@ const {registerWorker, work, ...} = require("worka/built/worka_require.js");
 
  * [registerWorker](#registerWorker)
  * [work](#work)
- * [WORKA SYMBOLS](#worka_symbols)
  * [workerSupport](#workersupport)
 
 
@@ -633,6 +632,8 @@ The results can vary a lot and depends, on network condition, ability to run the
 parallel (often in %), setup time/work time,
 
 Feel free to open issue to know more.
+
+<img src="./documentation/images/demo-screen.png" alt="screen shot of demo">
 
 ### The name
 
