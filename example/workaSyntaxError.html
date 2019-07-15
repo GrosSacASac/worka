@@ -17,15 +17,13 @@ const sort = `fffffffffffunction (array) {
     return array;
 }`;
 
-console.log("1");
 registerWorker({
     name: "sort",
     resource: sort,
     loadMode: STRING
 });
 
-console.log("2");
-work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+work({name: `sort`, input: [1, 2, 3, -8, -5, 2, 3, 45, 5]}).then(function (result) {
     console.log(result);
     console.log("after success");
 }).catch(function (error) {

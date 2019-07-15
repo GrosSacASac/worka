@@ -57,12 +57,12 @@ const sort = function (array) {
 };
 
 registerWorker({
-    name: "sort",
+    name: `sort`,
     resource: sort,
     loadMode: FUNCTION,
 });
 
-work("sort", [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+work({name: `sort`, input: [1, 2, 3, -8, -5, 2, 3, 45, 5]}).then(function (result) {
     // result is a copy
     console.log(result);
 });
@@ -128,7 +128,7 @@ Describes the worker. Example:
 
 ```
 {
-    name: "workerName",
+    name: `workerName`,
     resource: myFunction,
     loadMode: FUNCTION,
     lazy: 5,
@@ -193,15 +193,24 @@ const returnsMultipleFunctions = function () {
 };
 
 registerWorker({
-    name: "test",
+    name: `test`,
     resource: returnsMultipleFunctions,
     loadMode: MULTI_FUNCTION
 });
 
-work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
+work({
+    name: `test`,
+    functionName: `sort`,
+    input: [1,2,3,-8,-5,2,3,45,5],
+}).then(function (result) {
     console.log(result);
 });
-work("test/addNegativeLength", [1,2,3,-845,5]).then(function (result) {
+
+work({
+    name: `test`,
+    functionName: `addNegativeLength`,
+    input: [1,2,3,-845,5],
+}).then(function (result) {
     console.log(result);
 });
 ```
@@ -241,15 +250,15 @@ const statefullGenerator = function () {
 };
 
 registerWorker({
-    name: "stateTest",
+    name: `stateTest`,
     resource: statefullGenerator,
     loadMode: FUNCTION,
     stateless: false
 });
 
-work("stateTest", 5).then(function (result) {
+work({name: `stateTest`, input: 5}).then(function (result) {
     console.log(result); // 5
-    return work("stateTest", 5);
+    return work(name: `stateTest`, input: 5});
 }).then(function (result) {
     console.log(result); // 10
 });
@@ -275,14 +284,14 @@ Partial Default
 const functionReturner = function () {
 
     const largeConstantInitialization = [
-        "could be a long array",
-        "or something that would be",
-        "costly to create each time"
+        `could be a long array`,
+        `or something that would be`,
+        `costly to create each time`
     ];
 
     let recursiveFunction;
 
-    recursiveFunction = function ({input = "", tree}) {
+    recursiveFunction = function ({input = ``, tree}) {
         const localTextContent = tree.textContent;
         const allTextContent = `${input} > ${localTextContent}`;
         if (tree.child) {
@@ -294,28 +303,28 @@ const functionReturner = function () {
 };
 
 registerWorker({
-    name: "initializationTest",
+    name: `initializationTest`,
     resource: functionReturner,
     loadMode: FUNCTION,
     initialize: true
 });
 
 const recursiveDataStruct = {
-    textContent: "top level",
+    textContent: `top level`,
     child: {
-        textContent: "middle level",
+        textContent: `middle level`,
         child: {
-            textContent: "bottom level",
+            textContent: `bottom level`,
             child: {
-                textContent: "underground",
+                textContent: `underground`,
                 child: {
-                    textContent: "-10"
+                    textContent: `-10`
                 }
             }
         }
     }
 };
-work("initializationTest", {tree: recursiveDataStruct})
+work({name: `initializationTest`, input: {tree: recursiveDataStruct}})
 .then(function (result) {
     console.log(result);
     // > top level > middle level > bottom level > underground > -10
@@ -412,23 +421,23 @@ Partial Default
 
 ### work
 
-`work(name, input);`
+`work({name, input, functionName});`
 
 
 Returns a promise that eventually resolves with the result or fails. Use registerWorker first !
 
 
 ```js
-work("test/sort", [1,2,3,-8,-5,2,3,45,5]).then(function (result) {
+work({name:`test/sort`, input: [1,2,3,-8,-5,2,3,45,5]}).then(function (result) {
     console.log(result);
 }).catch(function (reason) {
     if (reason === NO_SUPPORT_ERROR) {
-        console.error("Web Worker API not supported");
+        console.error(`Web Worker API not supported`);
     } else if (reason === TIME_OUT_ERROR) {
         // can only happen with a worker registered with a timeOut
-        console.error("Took longer than expected");
+        console.error(`Took longer than expected`);
     } else {
-        console.error("other error", reason);
+        console.error(`other error`, reason);
     }
 });
 ```
@@ -477,7 +486,7 @@ const fetchFromNetwork = function (precision) {
     });
 };
 
-const promise = work("getPiEstimation", precision).catch(function (error) {
+const promise = work({name: `getPiEstimation`,input: precision}).catch(function (error) {
     if (error === NO_SUPPORT_ERROR) {
         return fetchFromNetwork(precision);
     } else {
@@ -499,7 +508,7 @@ const promise = fetch(`../estimatePi?input=${precision}`, {}).then(function (res
     const result = Number(resultString);
     return result;
 }).catch(function (noNetwork) {
-    return work("getPiEstimation", precision);
+    return work({name: `getPiEstimation`, input: precision});
 });
 ```
 
@@ -518,7 +527,7 @@ const fetchFromNetwork = function (precision) {
 };
 
 const promise = Promise.race([
-    work("getPiEstimation", precision),
+    work({name: `getPiEstimation`, input: precision}),
     fetchFromNetwork(precision)
 ]);
 
@@ -542,14 +551,14 @@ import promiseMemoize from "promise-memoize";
 
 // register worker
 registerWorker({
-    name: "getPiEstimation",
+    name: `getPiEstimation`,
     resource: estimatePi,
     loadMode: FUNCTION
 });
 
 // create memoized version
 const memoized = promiseMemoize(function(precision) {
-    return work("getPiEstimationForceRestart", precision);
+    return work({name: `getPiEstimationForceRestart`, input: precision});
 });
 
 // use it
@@ -637,7 +646,7 @@ Feel free to open issue to know more.
 
 ### The name
 
-"worka" was chosen to keep it short and "worker" was already taken.
+*worka* was chosen to keep it short and *worker* was already taken.
 
 
 ### Updates
@@ -645,6 +654,10 @@ Feel free to open issue to know more.
 #### 8.0.0
 
 Symbols are exported individually
+
+work expects an object as argument
+
+for MULTI_FUNCTION, functionName is separated from name
 
 #### 7.0.0
 

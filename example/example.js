@@ -17,9 +17,9 @@ import {
 import estimatePi from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
 
-const ESTIMATEPI_RAW_WORKER_URL = "estimatePiWorker.js";
-const ESTIMATEPI_RAW_WORKER_URL_NO_CACHE = "estimatePiWorkerNoCache.js";
-const ESTIMATE_PI_ACTION = "estimatePi";
+const ESTIMATEPI_RAW_WORKER_URL = `estimatePiWorker.js`;
+const ESTIMATEPI_RAW_WORKER_URL_NO_CACHE = `estimatePiWorkerNoCache.js`;
+const ESTIMATE_PI_ACTION = `estimatePi`;
 const SAMPLE_SIZE = 10;
 const INITIAL_PRECISION_LEVEL = 2 || 5;
 
@@ -39,13 +39,13 @@ let precision = precisionFromPrecisionLevel(INITIAL_PRECISION_LEVEL);
 
 
 registerWorker({
-    name: "getPiEstimation",
+    name: `getPiEstimation`,
     resource: estimatePi,
     loadMode: FUNCTION
 });
 
 registerWorker({
-    name: "getPiEstimationForceRestart",
+    name: `getPiEstimationForceRestart`,
     resource: estimatePi,
     loadMode: FUNCTION,
     hope: 5
@@ -54,16 +54,16 @@ registerWorker({
 
 
 d.functions.setPrecision = function () {
-    precision = precisionFromPrecisionLevel(Number(d.variables["precisionLevel"]));
+    precision = precisionFromPrecisionLevel(Number(d.variables[`precisionLevel`]));
 };
 
 d.functions.webWorkerPreloaded = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(estimatePiWorkerURL);
-    worker.addEventListener("message", function (event) {
+    worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (message.hasOwnProperty("result")) {
+        if (message.hasOwnProperty(`result`)) {
             const result = message.result;
             const endTime = getReferenceTime();
             const duration = endTime - startTime;
@@ -86,9 +86,9 @@ d.functions.webWorkerNoCache = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL_NO_CACHE);
-    worker.addEventListener("message", function (event) {
+    worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (message.hasOwnProperty("result")) {
+        if (message.hasOwnProperty(`result`)) {
 
             const result = message.result;
             const endTime = getReferenceTime();
@@ -112,9 +112,9 @@ d.functions.webWorkerWithCache = function () {
     const startTime = getReferenceTime();
 
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
-    worker.addEventListener("message", function (event) {
+    worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (message.hasOwnProperty("result")) {
+        if (message.hasOwnProperty(`result`)) {
 
             const result = message.result;
             const endTime = getReferenceTime();
@@ -188,7 +188,7 @@ const addAggregatesStats = function (aggregates) {
 
 const testWithoutWorker = function () {
     const aggregates = {
-        title: "Without Web Worker",
+        title: `Without Web Worker`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -219,7 +219,7 @@ const testWithoutWorker = function () {
 
 const testWithRemoteServer = function () {
     const aggregates = {
-        title: "With Remote Server",
+        title: `With Remote Server`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -258,7 +258,7 @@ const testWithRemoteServer = function () {
 
 const testWithRawWorker = function () {
     const aggregates = {
-        title: "With Raw Web Worker",
+        title: `With Raw Web Worker`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -271,9 +271,9 @@ const testWithRawWorker = function () {
         return new Promise(function (resolve, reject) {
             const startTime = getReferenceTime();
             const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
-            worker.addEventListener("message", function (event) {
+            worker.addEventListener(`message`, function (event) {
                 const message = event.data;
-                if (message.hasOwnProperty("result")) {
+                if (message.hasOwnProperty(`result`)) {
                     const piEstimation = message.result;
                     const endTime = getReferenceTime();
                     const duration = endTime - startTime;
@@ -307,7 +307,7 @@ const testWithRawWorker = function () {
 
 const testWithWorkerCreatedEveryTime = function () {
     const aggregates = {
-        title: "With Web Worker Created every time (worka)",
+        title: `With Web Worker Created every time (worka)`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -318,7 +318,7 @@ const testWithWorkerCreatedEveryTime = function () {
 
     const workerWork = function () {
         return timePromise(function () {
-            return work("getPiEstimationForceRestart", precision).catch(console.error);
+            return work({ name: `getPiEstimationForceRestart`, input: precision }).catch(console.error);
         }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
@@ -341,7 +341,7 @@ const testWithWorkerCreatedEveryTime = function () {
 
 const testWithWorker = function () {
     const aggregates = {
-        title: "With Web Worker  (worka)",
+        title: `With Web Worker  (worka)`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -352,13 +352,13 @@ const testWithWorker = function () {
 
     const workerWork = function () {
         return timePromise(function () {
-            return work("getPiEstimation", precision).catch(console.error);
+            return work({ name: `getPiEstimation`, input: precision }).catch(console.error);
         }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {
                 precision,
                 duration: timeElapsed,
-                piEstimation: value
+                piEstimation: value,
             };
         });
     };
@@ -375,7 +375,7 @@ const testWithWorker = function () {
 
 const testWithWorkerAutoSplit = function () {
     const aggregates = {
-        title: "With Web Worker auto split (worka)",
+        title: `With Web Worker auto split (worka)`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
@@ -386,7 +386,7 @@ const testWithWorkerAutoSplit = function () {
 
     const workerWork = function () {
         return timePromise(function () {
-            return work("getPiEstimation", precision).catch(console.error);
+            return work({ name: `getPiEstimation`, input: precision }).catch(console.error);
         }).then(function ({ timeElapsed, value }) {
             aggregates.totalComputationTime += timeElapsed;
             return {

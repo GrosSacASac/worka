@@ -44,8 +44,10 @@ const DECORATED_FILE = Symbol();
 // errors
 const NO_SUPPORT_ERROR = Symbol();
 const TIME_OUT_ERROR = Symbol();
-const SPLIT = `/`;
+
+// private
 const JS_MIME = { type: `text/javascript` };
+const USE_STRICT = `"use strict";`;
 
 let max = 1;
 if (typeof navigator === `object`) {
@@ -91,7 +93,6 @@ const loadWorker = function (worker) {
     worker.loaded = true;
 };
 
-const useStrict = `"use strict";`;
 /* convert to String because errorEvent can not be cloned*/
 const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
     errorEvent.preventDefault();
@@ -111,7 +112,7 @@ const decorateWorker = function (worker) {
     let decoratedAsString;
     if (loadMode === MULTI_FUNCTION) {
         decoratedAsString = `
-${useStrict}
+${USE_STRICT}
 ${errorHandler}
 const functions = ${originalAsString}();
 self.addEventListener(\`message\`, function(event) {
@@ -141,7 +142,7 @@ self.addEventListener(\`message\`, function(event) {
             initializeSuffix = `()`;
         }
         decoratedAsString = `
-${useStrict}
+${USE_STRICT}
 ${errorHandler}
 const doWork = ${originalAsString}${initializeSuffix};
 self.addEventListener(\`message\`, function(event) {
@@ -367,29 +368,13 @@ const workerWithLowestResolveQueue = function (workers) {
     });
 };
 
-const work = function (name, input, workerStore = workers, forceWork = false) {
-    /* is overloaded on many levels, could benefit from refactoring
-    functionName not needed ? */
+const work = function ({ name, functionName, input, workerStore = workers, forceWork = false }) {
     if (!workerSupport.basic) {
         return Promise.reject(NO_SUPPORT_ERROR);
     }
     let preparedInput;
-    let workerName;
-    let functionName;
-    if (Array.isArray(name)) {
-        [workerName, functionName] = name;
-    } else {
-        const nameSplit = name.split(SPLIT);
-        if (nameSplit.length === 2) {
-            // worker.loadMode === MULTI_FUNCTION
-            [workerName, functionName] = nameSplit;
-
-        } else {
-            workerName = name;
-        }
-    }
-    if (!Object.prototype.hasOwnProperty.call(workerStore, workerName)) {
-        return Promise.reject(`${workerName} not registered`);
+    if (!Object.prototype.hasOwnProperty.call(workerStore, name)) {
+        return Promise.reject(`${name} not registered`);
     }
     if (Object.prototype.hasOwnProperty.call(input, `input`)) {
         // already prepared
@@ -402,7 +387,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             preparedInput.functionName = functionName;
         }
     }
-    const worker = workerStore[workerName];
+    const worker = workerStore[name];
 
     if (worker.stateless && worker.resolveRejectQueue.length !== 0 && !forceWork) {
         /* the worker is already doing something and it is stateless
@@ -428,11 +413,12 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             const workerWithEmptyQueue = findWorkerWithEmptyQueue(worker.coWorkers);
             if (workerWithEmptyQueue) {
                 // at least 1 is idle, give it something to do
-                return work(
-                    [workerWithEmptyQueue.name, functionName],
-                    preparedInput,
-                    worker.coWorkers
-                );
+                return work({
+                    name: workerWithEmptyQueue.name,
+                    functionName,
+                    input: preparedInput,
+                    workerStore: worker.coWorkers,
+                });
             }
         }
 
@@ -443,7 +429,12 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
             const nameNow = worker.nextCoWorkerOptions.name;
             registerWorker(worker.nextCoWorkerOptions, worker.coWorkers);
             worker.nextCoWorkerOptions.name = String(Number(nameNow) + 1);
-            return work([nameNow, functionName], preparedInput, worker.coWorkers);
+            return work({
+                name: nameNow,
+                functionName,
+                input: preparedInput,
+                workerStore: worker.coWorkers,
+            });
         }
 
         /* search for the worker with the lowest resolution queue and delegate to it
@@ -451,7 +442,13 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
         const bestWorker = workerWithLowestResolveQueue(
             Object.values(worker.coWorkers).concat(worker)
         );
-        return work([bestWorker.name, functionName], preparedInput, bestWorker.workerStore, true);
+        return work({
+            name: bestWorker.name,
+            functionName,
+            input: preparedInput,
+            workerStore: bestWorker.workerStore,
+            forceWork: true
+        });
     }
 
     // normal case

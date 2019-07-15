@@ -16,7 +16,7 @@ registerWorker({
     loadMode: FILE
 });
 
-work(`sort`, [1, 2, 3, -8, -5, 2, 3, 45, 5]).then(function (result) {
+work({ name: `sort`, input: [1, 2, 3, -8, -5, 2, 3, 45, 5] }).then(function (result) {
     console.log(result);
     console.log(`after success`);
 }).catch(error => {
