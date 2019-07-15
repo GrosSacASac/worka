@@ -1,25 +1,22 @@
-/* optimisation ideas
+export {
+    registerWorker,
+    work,
+    workerSupport,
+    decorateWorker,
 
-remove unused things inside worker, like originalAsString if it is never going to be used again
-
-could change workerWithLowestResolveQueue, instead of guessing what worker will be idle the soonest,
-we could wait for the next worker to become idle, could be better than guessing,
-especially for function that have variability in time needed for execution
-
-proper de-registration for failures ?
-
-alternative feature detection
-https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js */
-
-/*jslint
-    browser, devel, fudge
-*/
-
-
-export { registerWorker, work, workerSupport, WORKA_SYMBOLS, decorateWorker };
+    STRING,
+    DECORATED,
+    FUNCTION,
+    MULTI_FUNCTION,
+    FILE,
+    DECORATED_FILE,
+    NO_SUPPORT_ERROR,
+    TIME_OUT_ERROR,
+    SPLIT,
+    JS_MIME,
+};
 
 const workerSupport = {
-
     basic: (typeof Worker === `function`),
     // transferables: undefined
     // encapsulation: undefined // Worker inside Worker
@@ -39,21 +36,18 @@ workerSupport.transferables = (smallArrayBuffer.byteLength === 0)
 
 const workers = {};
 
-
-const WORKA_SYMBOLS = {
-    // loadMode
-    STRING: Symbol(),
-    DECORATED: Symbol(),
-    FUNCTION: Symbol(),
-    MULTI_FUNCTION: Symbol(),
-    FILE: Symbol(),
-    DECORATED_FILE: Symbol(),
-    // errors
-    NO_SUPPORT_ERROR: Symbol(),
-    TIME_OUT_ERROR: Symbol(),
-    SPLIT: `/`,
-    JS_MIME: { type: `text/javascript` }
-};
+// loadMode
+const STRING = Symbol();
+const DECORATED = Symbol();
+const FUNCTION = Symbol();
+const MULTI_FUNCTION = Symbol();
+const FILE = Symbol();
+const DECORATED_FILE = Symbol();
+// errors
+const NO_SUPPORT_ERROR = Symbol();
+const TIME_OUT_ERROR = Symbol();
+const SPLIT = `/`;
+const JS_MIME = { type: `text/javascript` };
 
 let max = 1;
 if (typeof navigator === `object`) {
@@ -62,7 +56,7 @@ if (typeof navigator === `object`) {
 const WORKER_DEFAULT_OPTIONS = {
     name: ``,
     resource: ``,
-    loadMode: WORKA_SYMBOLS.STRING,
+    loadMode: STRING,
     lazy: 5,
     hope: 6,
     max,
@@ -91,8 +85,8 @@ const loadWorker = function (worker) {
     const resource = worker.resource;
     const loadMode = worker.loadMode;
     if (
-        loadMode === WORKA_SYMBOLS.FUNCTION ||
-        loadMode === WORKA_SYMBOLS.MULTI_FUNCTION
+        loadMode === FUNCTION ||
+        loadMode === MULTI_FUNCTION
     ) {
         worker.originalAsString = resource.toString();
     }
@@ -117,7 +111,7 @@ const decorateWorker = function (worker) {
     const originalAsString = worker.originalAsString;
     const loadMode = worker.loadMode;
     let decoratedAsString;
-    if (loadMode === WORKA_SYMBOLS.MULTI_FUNCTION) {
+    if (loadMode === MULTI_FUNCTION) {
         decoratedAsString = `
 ${useStrict}
 ${errorHandler}
@@ -170,7 +164,7 @@ self.addEventListener(\`message\`, function(event) {
 
 const instanciateWorker = function (worker) {
     worker.instanciated = true;
-    if (worker.loadMode === WORKA_SYMBOLS.FILE) {
+    if (worker.loadMode === FILE) {
         worker.instance = new Worker(worker.resource);
         return;
     }
@@ -179,7 +173,7 @@ const instanciateWorker = function (worker) {
         workerObjectURL = worker.workerObjectURL;
     } else {
         const decoratedAsString = worker.decoratedAsString;
-        const workerBlob = new Blob([decoratedAsString], WORKA_SYMBOLS.JS_MIME);
+        const workerBlob = new Blob([decoratedAsString], JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
     worker.instance = new Worker(workerObjectURL);
@@ -287,7 +281,7 @@ const prepareWorkerTimeOut = function (worker, resolve, reject, preparedInput) {
                 addEventListenerToWorker(worker);
             }
             afterWorkerFinished(worker);
-            reject(WORKA_SYMBOLS.TIME_OUT_ERROR);
+            reject(TIME_OUT_ERROR);
         }
     }, worker.timeOut);
 };
@@ -344,10 +338,10 @@ const registerWorker = function (options, workerStore = workers) {
 
     const loadMode = worker.loadMode;
     const resource = worker.resource;
-    if (loadMode === WORKA_SYMBOLS.STRING) {
+    if (loadMode === STRING) {
         worker.originalAsString = resource;
         worker.loaded = true;
-    } else if (loadMode === WORKA_SYMBOLS.DECORATED) {
+    } else if (loadMode === DECORATED) {
         worker.decoratedAsString = resource;
         worker.decorated = true;
         worker.loaded = true;
@@ -379,7 +373,7 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     /* is overloaded on many levels, could benefit from refactoring
     functionName not needed ? */
     if (!workerSupport.basic) {
-        return Promise.reject(WORKA_SYMBOLS.NO_SUPPORT_ERROR);
+        return Promise.reject(NO_SUPPORT_ERROR);
     }
     let preparedInput;
     let workerName;
@@ -387,9 +381,9 @@ const work = function (name, input, workerStore = workers, forceWork = false) {
     if (Array.isArray(name)) {
         [workerName, functionName] = name;
     } else {
-        const nameSplit = name.split(WORKA_SYMBOLS.SPLIT);
+        const nameSplit = name.split(SPLIT);
         if (nameSplit.length === 2) {
-            // worker.loadMode === WORKA_SYMBOLS.MULTI_FUNCTION
+            // worker.loadMode === MULTI_FUNCTION
             [workerName, functionName] = nameSplit;
 
         } else {

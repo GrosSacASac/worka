@@ -582,12 +582,24 @@ Contributions welcome :)
 
 ### To Do
 
- * expose decorate to compile time
- * allow asynchronous function execution
  * report progress system design (streams ?)
  * es5 and old browser support
  * Opt in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
  * Allow asynchronous functions
+
+### Optimisation ideas
+
+remove unused things inside worker, like originalAsString if it is never going to be used again
+
+could change workerWithLowestResolveQueue, instead of guessing what worker will be idle the soonest,
+we could wait for the next worker to become idle, could be better than guessing,
+especially for function that have variability in time needed for execution
+
+proper de-registration for failures ?
+
+alternative feature detection
+https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-webworkers-ui.js */
+
 
 ### Some tests
 
@@ -620,6 +632,10 @@ Feel free to open issue to know more.
 
 
 ### Updates
+
+#### 8.0.0
+
+Symbols are exported individually
 
 #### 7.0.0
 
