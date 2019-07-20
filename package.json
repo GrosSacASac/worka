@@ -1,18 +1,17 @@
 {
   "name": "worka",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "type": "module",
   "main": "source/worka.js",
   "description": "web workers results in promises",
   "scripts": {
-    "buildBrowser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
-    "buildCommonJs": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
-    "prepublishOnly": "npm run buildBrowser && npm run buildCommonJs",
+    "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
+    "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
+    "prepublishOnly": "npm run build-browser && npm run build-node",
     "try": "node --experimental-modules example/index.js 8080",
-    "prepareNodeExample": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
-    "runNodeExample": "node --experimental-modules example-node/file_usage.js",
-    "tryNode": "npm run prepareNodeExample && npm run runNodeExample",
-    "tryDeno": "deno example-deno/file_usage.js"
+    "prepare-node-example": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
+    "node-example": "node --experimental-modules example-node/file_usage.js",
+    "deno-example": "deno example-deno/file_usage.js"
   },
   "repository": {
     "type": "git",
