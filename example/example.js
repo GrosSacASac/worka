@@ -262,7 +262,7 @@ const testWithRawWorker = function () {
     };
 
     const rawWorkerWork = function () {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             const startTime = getReferenceTime();
             const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
             worker.addEventListener(`message`, function (event) {

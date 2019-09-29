@@ -82,8 +82,8 @@ const WORKER_INITIAL_SETTINGS = {
 };
 
 const loadWorker = function (worker) {
-    const {resource} = worker;
-    const {loadMode} = worker;
+    const { resource } = worker;
+    const { loadMode } = worker;
     if (
         loadMode === FUNCTION ||
         loadMode === MULTI_FUNCTION
@@ -107,8 +107,8 @@ const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
     });
 });`;
 const decorateWorker = function (worker) {
-    const {originalAsString} = worker;
-    const {loadMode} = worker;
+    const { originalAsString } = worker;
+    const { loadMode } = worker;
     let decoratedAsString;
     if (loadMode === MULTI_FUNCTION) {
         decoratedAsString = `
@@ -167,11 +167,9 @@ const instanciateWorker = function (worker) {
         worker.instance = new Worker(worker.resource);
         return;
     }
-    let workerObjectURL;
-    if (worker.workerObjectURL) {
-        workerObjectURL = worker.workerObjectURL;
-    } else {
-        const {decoratedAsString} = worker;
+    let { workerObjectURL } = worker;
+    if (!workerObjectURL) {
+        const { decoratedAsString } = worker;
         const workerBlob = new Blob([decoratedAsString], JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
@@ -189,7 +187,7 @@ const forceAwakenWorker = function (worker) {
     // a worker is awaken as soon as it receives it first message
     // this function can be used to awake the worker before it is used
     // can be a good idea when the worker needs time to set up
-    const {instance} = worker;
+    const { instance } = worker;
     instance.postMessage(``);
     worker.awakened = true; // or will be in a few
 };
@@ -207,7 +205,7 @@ const forceTerminateWorker = function (worker) {
 const afterWorkerFinished = function (worker) {
     /* a worker with 0 hope was made to be used 1 time
     a worker with 100 hope was made to be used multiple times*/
-    const {length} = worker.resolveRejectQueue;
+    const { length } = worker.resolveRejectQueue;
     if (length !== 0) {
         if (worker.timeOut && worker.inputQueue.length !== 0) {
             worker.instance.postMessage(worker.inputQueue.shift());
@@ -216,7 +214,7 @@ const afterWorkerFinished = function (worker) {
         return;
     }
 
-    const {hope} = worker;
+    const { hope } = worker;
     if (hope > 5) {
         return;
     }
@@ -232,7 +230,7 @@ const afterWorkerFinished = function (worker) {
 const afterWorkerErrored = function (worker) {
     /* stop everything */
     const error = `request to worker canceled because an error occured before`;
-    worker.resolveRejectQueue.forEach(function ([resolve, reject]) {
+    worker.resolveRejectQueue.forEach(function ([, reject]) {
         reject(error);
     });
 
@@ -241,16 +239,16 @@ const afterWorkerErrored = function (worker) {
 };
 
 const addEventListenerToWorker = function (worker) {
-    const {instance} = worker;
+    const { instance } = worker;
     instance.addEventListener(`message`, function (event) {
         const message = event.data;
         const [resolve, reject] = worker.resolveRejectQueue.shift();
         if (Object.prototype.hasOwnProperty.call(message, `result`)) {
-            const {result} = message;
+            const { result } = message;
             resolve(result);
             afterWorkerFinished(worker);
         } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
-            const {error} = message;
+            const { error } = message;
             reject(error);
             afterWorkerErrored(worker);
         }
@@ -335,8 +333,8 @@ const registerWorker = function (options, workerStore = workers) {
         // need to manage input queue manually for timeouts
     }
 
-    const {loadMode} = worker;
-    const {resource} = worker;
+    const { loadMode } = worker;
+    const { resource } = worker;
     if (loadMode === STRING) {
         worker.originalAsString = resource;
         worker.loaded = true;
@@ -356,8 +354,8 @@ const findWorkerWithEmptyQueue = function (workerStore = workers) {
     });
 };
 
-const workerWithLowestResolveQueue = function (workers) {
-    return workers.reduce(function (workerWithLowestResolveQueueSoFar, worker) {
+const workerWithLowestResolveQueue = function (workerPool) {
+    return workerPool.reduce(function (workerWithLowestResolveQueueSoFar, worker) {
         if (
             worker.resolveRejectQueue.length <
             workerWithLowestResolveQueueSoFar.resolveRejectQueue.length

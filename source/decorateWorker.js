@@ -1,7 +1,7 @@
 import { decorateWorker } from "./worka.js";
 import { writeTextInFile, textFileContent } from "filesac";
 
-const [x, y, input, output] = process.argv;
+const [, , input, output] = process.argv;
 
 (async function () {
     const originalAsString = await textFileContent(input);

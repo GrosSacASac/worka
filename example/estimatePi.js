@@ -23,4 +23,4 @@ const estimatePi = function (precision) {
         }
     }
     return (insideCounter / precision) * 4;
-}
+};
