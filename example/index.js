@@ -1,5 +1,5 @@
 import polka from "polka";
-import estimatePi from "./estimatePi.js";
+import { estimatePi } from "./estimatePi.js";
 import { makeSendFileAvailable } from "./sendFile.js";
 import serveStatic from "serve-static";
 import { fileURLToPath } from 'url';

@@ -44,5 +44,5 @@ self.addEventListener("message", function(event) {
 
 });`;
 
-const estimatePiWorkerJsBlob = new Blob([estimatePiWorkerCode], { type: "text/javascript" });
+const estimatePiWorkerJsBlob = new Blob([estimatePiWorkerCode], { type: `text/javascript` });
 export const estimatePiWorkerURL = URL.createObjectURL(estimatePiWorkerJsBlob);

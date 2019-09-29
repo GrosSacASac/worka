@@ -62,7 +62,7 @@ const WORKER_DEFAULT_OPTIONS = {
     max,
     stateless: true,
     initialize: false,
-    timeOut: false
+    timeOut: false,
 };
 
 // impossible to accidentally overwrite
@@ -78,12 +78,12 @@ const WORKER_INITIAL_SETTINGS = {
     hasEventListener: false,
     resolveRejectQueue: undefined,
     inputQueue: undefined,
-    workerStore: workers
+    workerStore: workers,
 };
 
 const loadWorker = function (worker) {
-    const resource = worker.resource;
-    const loadMode = worker.loadMode;
+    const {resource} = worker;
+    const {loadMode} = worker;
     if (
         loadMode === FUNCTION ||
         loadMode === MULTI_FUNCTION
@@ -107,8 +107,8 @@ const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
     });
 });`;
 const decorateWorker = function (worker) {
-    const originalAsString = worker.originalAsString;
-    const loadMode = worker.loadMode;
+    const {originalAsString} = worker;
+    const {loadMode} = worker;
     let decoratedAsString;
     if (loadMode === MULTI_FUNCTION) {
         decoratedAsString = `
@@ -171,7 +171,7 @@ const instanciateWorker = function (worker) {
     if (worker.workerObjectURL) {
         workerObjectURL = worker.workerObjectURL;
     } else {
-        const decoratedAsString = worker.decoratedAsString;
+        const {decoratedAsString} = worker;
         const workerBlob = new Blob([decoratedAsString], JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
@@ -189,7 +189,7 @@ const forceAwakenWorker = function (worker) {
     // a worker is awaken as soon as it receives it first message
     // this function can be used to awake the worker before it is used
     // can be a good idea when the worker needs time to set up
-    const instance = worker.instance;
+    const {instance} = worker;
     instance.postMessage(``);
     worker.awakened = true; // or will be in a few
 };
@@ -207,7 +207,7 @@ const forceTerminateWorker = function (worker) {
 const afterWorkerFinished = function (worker) {
     /* a worker with 0 hope was made to be used 1 time
     a worker with 100 hope was made to be used multiple times*/
-    const length = worker.resolveRejectQueue.length;
+    const {length} = worker.resolveRejectQueue;
     if (length !== 0) {
         if (worker.timeOut && worker.inputQueue.length !== 0) {
             worker.instance.postMessage(worker.inputQueue.shift());
@@ -216,7 +216,7 @@ const afterWorkerFinished = function (worker) {
         return;
     }
 
-    const hope = worker.hope;
+    const {hope} = worker;
     if (hope > 5) {
         return;
     }
@@ -241,16 +241,16 @@ const afterWorkerErrored = function (worker) {
 };
 
 const addEventListenerToWorker = function (worker) {
-    const instance = worker.instance;
+    const {instance} = worker;
     instance.addEventListener(`message`, function (event) {
         const message = event.data;
         const [resolve, reject] = worker.resolveRejectQueue.shift();
         if (Object.prototype.hasOwnProperty.call(message, `result`)) {
-            const result = message.result;
+            const {result} = message;
             resolve(result);
             afterWorkerFinished(worker);
         } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
-            const error = message.error;
+            const {error} = message;
             reject(error);
             afterWorkerErrored(worker);
         }
@@ -327,7 +327,7 @@ const registerWorker = function (options, workerStore = workers) {
         ...WORKER_DEFAULT_OPTIONS,
         ...options,
         ...WORKER_INITIAL_SETTINGS,
-        workerStore
+        workerStore,
     };
     worker.resolveRejectQueue = [];
     if (worker.timeOut && worker.hope > 5) {
@@ -335,8 +335,8 @@ const registerWorker = function (options, workerStore = workers) {
         // need to manage input queue manually for timeouts
     }
 
-    const loadMode = worker.loadMode;
-    const resource = worker.resource;
+    const {loadMode} = worker;
+    const {resource} = worker;
     if (loadMode === STRING) {
         worker.originalAsString = resource;
         worker.loaded = true;
@@ -381,7 +381,7 @@ const work = function ({ name, functionName, input, workerStore = workers, force
         preparedInput = input;
     } else {
         preparedInput = {
-            input
+            input,
         };
         if (functionName !== undefined) {
             preparedInput.functionName = functionName;
@@ -403,7 +403,7 @@ const work = function ({ name, functionName, input, workerStore = workers, force
                 coWorkers: undefined,
                 max: 1,
                 name: `0`,
-                workerStore: worker.coWorkers
+                workerStore: worker.coWorkers,
             });
         }
         const coWorkerCount = Object.keys(worker.coWorkers).length;
@@ -447,7 +447,7 @@ const work = function ({ name, functionName, input, workerStore = workers, force
             functionName,
             input: preparedInput,
             workerStore: bestWorker.workerStore,
-            forceWork: true
+            forceWork: true,
         });
     }
 

@@ -5,6 +5,8 @@
   "main": "source/worka.js",
   "description": "web workers results in promises",
   "scripts": {
+    "lint-fix": "eslint --ignore-path .gitignore --fix source example example-deno example-node",
+    "lint": "eslint --ignore-path .gitignore source example example-deno example-node",
     "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
     "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
     "prepublishOnly": "npm run build-browser && npm run build-node",
@@ -26,6 +28,8 @@
   "license": "BSL-1.0",
   "dependencies": {},
   "devDependencies": {
+    "eslint": "^6.5.0",
+    "eslint-config-red": "^1.4.1",
     "filesac": "^11.0.0",
     "rollup": "^1.17.0"
   },
@@ -33,5 +37,21 @@
     "web",
     "worker",
     "promise"
-  ]
+  ],
+  "eslintConfig": {
+    "extends": [
+      "red"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module",
+      "ecmaFeatures": {}
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
+    },
+    "rules": {}
+  }
 }

@@ -1,4 +1,4 @@
-const estimatePi  = function (precision) {
+const estimatePi = function (precision) {
     /* PI Estimation, precision is also limiter by the Number type type precision
     correctness is affected by the randomness Math.random()*/
     const radius = 1;
@@ -12,7 +12,7 @@ const estimatePi  = function (precision) {
         xCoordinate = Math.random();
         yCoordinate = Math.random();
 
-        intermediary = (xCoordinate ** 2) + (yCoordinate ** 2)
+        intermediary = (xCoordinate ** 2) + (yCoordinate ** 2);
         // ** 0.5 is not required because we compare with 1;
         if (intermediary < radius) {
             insideCounter += 1;
@@ -21,20 +21,20 @@ const estimatePi  = function (precision) {
     return (insideCounter / precision) * 4;
 };
 
-self.addEventListener("message", function(event) {
+self.addEventListener(`message`, function (event) {
     const message = event.data;
-    if (!message.hasOwnProperty("action")) {
+    if (!Object.prototype.hasOwnProperty.call(message, `action`)) {
         return;
     }
-    const action = message.action;
+    const { action } = message;
 
-    if (action === "estimatePi") {
+    if (action === `estimatePi`) {
 
         const precision = message.input;
         const result = estimatePi(precision);
 
         self.postMessage({
-            result
+            result,
         });
     }
 

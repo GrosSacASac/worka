@@ -8,20 +8,20 @@ self.addEventListener(`error`, function (errorEvent) {
         asString = String(errorEvent);
     }
     self.postMessage({
-        error: asString
+        error: asString,
     });
 });
 const doWork = function sort(array) {
     array.sort(); // run time error will trigger the catch
     return array;
-};;
+};
 self.addEventListener(`message`, function (event) {
     const message = event.data;
     if (!Object.prototype.hasOwnProperty.call(message, `input`)) {
         return; // only waking up
     }
-    const input = message.input;
+    const {input} = message;
     self.postMessage({
-        result: doWork(input)
+        result: doWork(input),
     });
 });

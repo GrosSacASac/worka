@@ -1,4 +1,4 @@
-function sort(array) {
-    array.sort(); // run time error will trigger the catch
+const sort = (array) => {
+    array.sort();
     return array;
 };
