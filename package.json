@@ -1,9 +1,10 @@
 {
   "name": "worka",
-  "version": "8.0.1",
+  "version": "8.0.2",
+  "description": "web workers results in promises",
+  "license": "BSL-1.0",
   "type": "module",
   "main": "source/worka.js",
-  "description": "web workers results in promises",
   "scripts": {
     "lint-fix": "eslint --ignore-path .gitignore --fix source example example-deno example-node",
     "lint": "eslint --ignore-path .gitignore source example example-deno example-node",
@@ -15,17 +16,6 @@
     "node-example": "node --experimental-modules example-node/file_usage.js",
     "deno-example": "deno example-deno/file_usage.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/GrosSacASac/worka.git"
-  },
-  "files": [
-    "built",
-    "source",
-    "readme.md",
-    "LICENSE.txt"
-  ],
-  "license": "BSL-1.0",
   "dependencies": {},
   "devDependencies": {
     "eslint": "^6.5.0",
@@ -33,11 +23,6 @@
     "filesac": "^11.0.0",
     "rollup": "^1.17.0"
   },
-  "keywords": [
-    "web",
-    "worker",
-    "promise"
-  ],
   "eslintConfig": {
     "extends": [
       "red"
@@ -53,5 +38,20 @@
       "node": true
     },
     "rules": {}
-  }
+  },
+  "files": [
+    "built",
+    "source",
+    "readme.md",
+    "LICENSE.txt"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/GrosSacASac/worka.git"
+  },
+  "keywords": [
+    "web",
+    "worker",
+    "promise"
+  ]
 }
