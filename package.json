@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "8.0.2",
+  "version": "8.1.0",
   "description": "web workers results in promises",
   "license": "BSL-1.0",
   "type": "module",
@@ -18,10 +18,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "eslint": "^6.5.0",
-    "eslint-config-red": "^1.4.1",
-    "filesac": "^11.0.0",
-    "rollup": "^1.17.0"
+    "eslint": "^6.8.0",
+    "eslint-config-red": "^1.7.0",
+    "filesac": "^11.1.1",
+    "rollup": "^2.7.2"
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +52,8 @@
   "keywords": [
     "web",
     "worker",
-    "promise"
+    "promise",
+    "array",
+    "parallel"
   ]
 }

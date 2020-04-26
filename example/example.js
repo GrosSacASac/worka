@@ -1,12 +1,11 @@
 import { registerWorker, FUNCTION, work } from "../source/worka.js";
-import * as d from "./node_modules/dom99/built/dom99ES.js";
+import * as d from "./node_modules/dom99/built/dom99.es.js";
 import {
     doNTimes,
     chainPromises,
     chainPromiseNTimes,
     timeFunction,
     timePromise,
-    arrayWithResults,
 } from "./node_modules/utilsac/utility.js";
 import { estimatePi } from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
@@ -392,7 +391,7 @@ const testWithWorkerAutoSplit = function () {
     };
 
     return timePromise(function () {
-        const allPromises = arrayWithResults(workerWork, SAMPLE_SIZE);
+        const allPromises = Array.from({length: SAMPLE_SIZE}, workerWork);
         return Promise.all(allPromises);
     }).then(function ({ timeElapsed, value }) {
         aggregates.results = value;
