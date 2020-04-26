@@ -3,6 +3,5 @@ node_modules/
 readme-draft.de.md
 
 webspree_session.json
-built/worka_script.js
-built/worka_require.js
+built/
 example-node/sort_worka.js

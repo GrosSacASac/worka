@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "8.1.0",
+  "version": "9.0.0",
   "description": "web workers results in promises",
   "license": "BSL-1.0",
   "type": "module",
@@ -8,9 +8,10 @@
   "scripts": {
     "lint-fix": "eslint --ignore-path .gitignore --fix source example example-deno example-node",
     "lint": "eslint --ignore-path .gitignore source example example-deno example-node",
-    "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka_script.js",
-    "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka_require.js",
-    "prepublishOnly": "npm run build-browser && npm run build-node",
+    "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka.iife.js",
+    "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka.cjs",
+    "bundle": "npm run build-browser && npm run build-node",
+    "prepublishOnly": "npm run bundle",
     "try": "node --experimental-modules example/index.js 8080",
     "prepare-node-example": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
     "node-example": "node --experimental-modules example-node/file_usage.js",
@@ -43,7 +44,8 @@
     "built",
     "source",
     "readme.md",
-    "LICENSE.txt"
+    "LICENSE.txt",
+    "changelog.md"
   ],
   "repository": {
     "type": "git",
