@@ -101,7 +101,7 @@ import {
 } from "worka";
 
 // node11-
-const {registerWorker, work, ...} = require("worka/built/worka_require.js");
+const {registerWorker, work, ...} = require("worka/built/worka.cjs");
 ```
 
 ## API
