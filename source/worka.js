@@ -4,9 +4,6 @@ export {
     workerSupport,
     decorateWorker,
 
-    workParallel,
-    
-
     STRING,
     DECORATED,
     FUNCTION,
