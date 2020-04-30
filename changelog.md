@@ -1,4 +1,8 @@
 
+#### 9.1.0
+
+ * Add arrayParallel.js
+
 #### 9.0.0
 
  * Rename `built/worka_require.js` into `built/worka.cjs`
