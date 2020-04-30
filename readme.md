@@ -20,6 +20,7 @@ worka.js is an abstraction layer on top of web worker, with a declarative life c
  * Time out management
  * Worker Life-cycle management
  * Small file and zero dependencies
+ * Array Processing helper
 
 
 ## How/Install
@@ -373,7 +374,7 @@ Partial Default
 }
 ```
 
- * 5+ no effect, slowest first start, lowest memory usage
+ * 5+ no effect, slowest first start, lowest memory usage default value
  * 4 worker is preloaded
  * 3 worker is decorated and all the above
  * 2 worker is instanciated and all the above
@@ -464,7 +465,18 @@ The input that will be provided to the worker. To pass multiple inputs use a con
     transferrables: undefined // for now
 }
 ```
+### mapParallel
 
+Helper function similar to array.map. Note the data argument comes last.
+
+```js
+import { mapParallel } from "worka/source/arrayParallel.js";
+
+
+const results = await Promise.all(mapParallel(function (item) {
+    return item ** 2;
+}, [`5`,`4`, `3`]));
+```
 
 ## Advanced topics
 
