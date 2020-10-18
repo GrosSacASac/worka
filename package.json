@@ -15,7 +15,7 @@
     "try": "node --experimental-modules example/index.js 8080",
     "prepare-node-example": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
     "node-example": "node --experimental-modules example-node/file_usage.js",
-    "deno-example": "deno example-deno/file_usage.js"
+    "deno-example": "deno run example-deno/file_usage.js"
   },
   "dependencies": {},
   "devDependencies": {

@@ -1,8 +1,9 @@
 import { registerWorker, FILE, NO_SUPPORT_ERROR, TIME_OUT_ERROR, work } from "../source/worka.js";
-import { __ } from 'https://deno.land/x/dirname/mod.ts';
+import makeloc from 'https://cdn.deno.land/dirname/versions/1.1.2/raw/mod.ts'//https://x.nest.land/dirname@v1.1.2/mod.ts'
 
 
-const { __filename, __dirname } = __(import.meta);
+const { __dirname,  __filename } = makeloc(import.meta)
+
 
 console.log(`${__dirname}/sort_worka.js`.substr(1));
 console.log(`${__dirname}/w.ts`.substr(1));
