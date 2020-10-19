@@ -1,5 +1,10 @@
 # Changelog
 
+## 10.0.0
+
+ * Worker is a module by default.
+ * Works with Deno.
+
 
 ## 9.1.0
 

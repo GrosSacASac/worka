@@ -63,6 +63,7 @@ const WORKER_DEFAULT_OPTIONS = {
     stateless: true,
     initialize: false,
     timeOut: false,
+    type: `module`,
 };
 
 // impossible to accidentally overwrite
@@ -164,7 +165,9 @@ self.addEventListener(\`message\`, function(event) {
 const instanciateWorker = function (worker) {
     worker.instanciated = true;
     if (worker.loadMode === FILE) {
-        worker.instance = new Worker(worker.resource);
+        worker.instance = new Worker(worker.resource, {
+            type: worker.type,
+        });
         return;
     }
     let { workerObjectURL } = worker;
@@ -173,7 +176,9 @@ const instanciateWorker = function (worker) {
         const workerBlob = new Blob([decoratedAsString], JS_MIME);
         workerObjectURL = URL.createObjectURL(workerBlob);
     }
-    worker.instance = new Worker(workerObjectURL);
+    worker.instance = new Worker(workerObjectURL, {
+        type: worker.type,
+    });
     if (worker.hope > 5 || worker.hope < 1) {
         // remove for debugging
         URL.revokeObjectURL(workerObjectURL);

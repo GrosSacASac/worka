@@ -101,6 +101,13 @@ import {
     TIME_OUT_ERROR,
 } from "worka";
 
+// deno
+import {
+    registerWorker,
+    work,
+    // ...
+} from "https://unpkg.com/worka/source/worka.js";
+
 // node11-
 const {registerWorker, work, ...} = require("worka/built/worka.cjs");
 ```
@@ -137,7 +144,8 @@ Describes the worker. Example:
     max: navigator.hardwareConcurrency || 1,
     stateless: true,
     initialize: false,
-    timeOut: false
+    timeOut: false,
+    type: `module` || `classic`,
 }
 ```
 

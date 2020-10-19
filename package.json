@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "9.1.1",
+  "version": "10.0.0",
   "description": "web workers results in promises",
   "license": "BSL-1.0",
   "type": "module",
@@ -14,8 +14,9 @@
     "prepublishOnly": "npm run bundle",
     "try": "node --experimental-modules example/index.js 8080",
     "prepare-node-example": "node --experimental-modules source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
+    "prepare-deno-example": "node --experimental-modules source/decorateWorker.js example-node/sort.js sort_worka.js",
     "node-example": "node --experimental-modules example-node/file_usage.js",
-    "deno-example": "deno run example-deno/file_usage.js"
+    "deno-example": "deno run --allow-read example-deno/file_usage.js "
   },
   "dependencies": {},
   "devDependencies": {
