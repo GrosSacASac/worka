@@ -179,7 +179,7 @@ Partial Default
 ```
 
 
-To use multiple functions inside 1 Worker use `MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function.
+To use multiple functions inside 1 Worker use `MULTI_FUNCTION` and provide as a `resource` a function that returns an object with multiple functions. Individuals keys of the object are later used to activate the targeted function. The worker functions may return promises.
 
 
 ```js

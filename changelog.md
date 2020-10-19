@@ -1,9 +1,15 @@
 # Changelog
 
+## 10.1.0
+
+ * Functions provided to registerWorker can also return Promises
+ * Requires async await support
+
+
 ## 10.0.0
 
- * Worker is a module by default.
- * Works with Deno.
+ * Worker is a module by default
+ * Works with Deno
 
 
 ## 9.1.0
@@ -32,12 +38,12 @@
 
 ## 6.0.0
 
- * built/worka_script.js and built/worka_require.js removed from git.
+ * built/worka_script.js and built/worka_require.js removed from git
  * Use npm or run build yourself.
 
 ## 5.0.0
 
- * Symbol is expected to be defined. Cleanup behaviour after error occurs, instead of never settled promised.
+ * Symbol is expected to be defined. Cleanup behaviour after error occurs, instead of never settled promised
 
 ## 4.0.3
 

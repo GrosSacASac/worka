@@ -104,7 +104,7 @@ const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
         asString = String(errorEvent);
     }
     self.postMessage({
-        error: asString
+        error: asString,
     });
 });`;
 const decorateWorker = function (worker) {
@@ -116,7 +116,7 @@ const decorateWorker = function (worker) {
 ${USE_STRICT}
 ${errorHandler}
 const functions = ${originalAsString}();
-self.addEventListener(\`message\`, function(event) {
+self.addEventListener(\`message\`, async function(event) {
     const message = event.data;
     if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
         return;
@@ -129,8 +129,10 @@ self.addEventListener(\`message\`, function(event) {
         });
         return;
     }
+
+    const result = await functions[functionName](input);
     self.postMessage({
-        result: functions[functionName](input)
+        result,
     });
 });
         `;
@@ -146,17 +148,17 @@ self.addEventListener(\`message\`, function(event) {
 ${USE_STRICT}
 ${errorHandler}
 const doWork = ${originalAsString}${initializeSuffix};
-self.addEventListener(\`message\`, function(event) {
+self.addEventListener(\`message\`, async function(event) {
     const message = event.data;
     if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
         return; // only waking up
     }
     const input = message.input;
+    const result = await doWork(input);
     self.postMessage({
-        result: doWork(input)
+        result,
     });
-});
-        `;
+});`;
     }
     worker.decoratedAsString = decoratedAsString;
     worker.decorated = true;
