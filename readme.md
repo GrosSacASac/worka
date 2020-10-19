@@ -483,7 +483,7 @@ import { mapParallel } from "worka/source/arrayParallel.js";
 
 const results = await Promise.all(mapParallel(function (item) {
     return item ** 2;
-}, [`5`,`4`, `3`]));
+}, [5, 4, 3]));
 ```
 
 ## Advanced topics
