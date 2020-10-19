@@ -445,7 +445,7 @@ const work = function ({ name, functionName, input, workerStore = workers, force
         /* search for the worker with the lowest resolution queue and delegate to it
         use a boolean to avoid infinite recursion loop */
         const bestWorker = workerWithLowestResolveQueue(
-            Object.values(worker.coWorkers).concat(worker)
+            Object.values(worker.coWorkers).concat(worker),
         );
         return work({
             name: bestWorker.name,

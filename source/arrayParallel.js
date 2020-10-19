@@ -9,7 +9,7 @@ import {
 } from "./worka.js";
 
 
-const privateName = `arrayParallel.js`
+const privateName = `arrayParallel.js`;
 const mapParallel = function (mapper, list) {
     registerWorker({
         name: privateName,

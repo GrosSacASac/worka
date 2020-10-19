@@ -14,9 +14,9 @@ const levels = [8,8,8,8].map(precisionFromPrecisionLevel);
 
 
 console.time(`regular`);
-const results = levels.map(estimatePi);
+const regularResults = levels.map(estimatePi);
 console.timeEnd(`regular`);
-console.log(results);
+console.log(regularResults);
 
 (async function () {
     console.time(`worka`);
