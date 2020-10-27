@@ -5,7 +5,7 @@ import makeloc from 'https://cdn.deno.land/dirname/versions/1.1.2/raw/mod.ts'//h
 const { __dirname,  __filename } = makeloc(import.meta);
 
 
-// console.log(`${__dirname}sort_worka.js`.substr(1));
+// console.log(`file:///${__dirname}../../sort_worka.js`);
 
 registerWorker({
     name: `sort`,
