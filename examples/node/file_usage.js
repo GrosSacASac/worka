@@ -1,11 +1,11 @@
 import "./patchNodeWorker.js";
 import { registerWorker, FILE, NO_SUPPORT_ERROR, TIME_OUT_ERROR, work } from "../../source/worka.js";
-import { fileURLToPath, pathToFileURL } from 'url';
-import { dirname } from 'path';
+import { fileURLToPath, pathToFileURL } from "url";
+import { dirname } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-console.log(pathToFileURL(`${__dirname}/../../sort_worka.js`).href)
+console.log(pathToFileURL(`${__dirname}/../../sort_worka.js`).href);
 // console.log(`file:///C:/files/worka/sort_worka.js`) 
 
 registerWorker({
