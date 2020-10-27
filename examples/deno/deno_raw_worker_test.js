@@ -6,7 +6,7 @@ const { __dirname,  __filename } = makeloc(import.meta);
 
 console.log(`${__dirname}w.ts`.substr(1));
 
-const tsWorker = new Worker(`file:///${`${__dirname}w.ts`.substr(1)}`, {
+const tsWorker = new Worker(`file:///${__dirname}w.ts`, {
     type: "module",
 });
 tsWorker.postMessage("Hello World");

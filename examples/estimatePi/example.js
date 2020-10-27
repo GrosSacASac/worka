@@ -1,12 +1,12 @@
-import { registerWorker, FUNCTION, work } from "../source/worka.js";
-import * as d from "./node_modules/dom99/built/dom99.es.js";
+import { registerWorker, FUNCTION, work } from "../../source/worka.js";
+import * as d from "../node_modules/dom99/built/dom99.es.js";
 import {
     doNTimes,
     chainPromises,
     chainPromiseNTimes,
     timeFunction,
     timePromise,
-} from "./node_modules/utilsac/utility.js";
+} from "../node_modules/utilsac/utility.js";
 import { estimatePi } from "./estimatePi.js";
 import { estimatePiWorkerURL } from "./estimatePiPrepared.js";
 

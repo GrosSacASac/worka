@@ -1,5 +1,5 @@
 import polka from "polka";
-import { estimatePi } from "./estimatePi.js";
+import { estimatePi } from "./estimatePi/estimatePi.js";
 import { makeSendFileAvailable } from "./sendFile.js";
 import serveStatic from "serve-static";
 import { fileURLToPath } from 'url';
@@ -18,10 +18,10 @@ const EXPLANATION = "using artificial delay to simulate real network: " + ARTIFI
 
 const PORT = port || 3000;
 const realSimulation = true;
-const app = polka()
+const app = polka();
 
 
-app.get('/estimatePi', function (req, res) {
+app.get('/examples/estimatePi', function (req, res) {
     const query = req.query;
     if (!Object.prototype.hasOwnProperty.call(query, "input")) {
         res.status(400);
@@ -48,7 +48,7 @@ app.get('/estimatePi', function (req, res) {
 
 });
 
-app.get('/example/estimatePiWorkerNoCache.js', function (req, res) {
+app.get('/examples/estimatePi/estimatePiWorkerNoCache.js', function (req, res) {
     // force no cache, to get an idea how much it is helping
     console.log(EXPLANATION);
     setTimeout(function () {
@@ -61,7 +61,7 @@ app.get('/example/estimatePiWorkerNoCache.js', function (req, res) {
 
 
 });
-app.get('/example/estimatePiWorker.js', function (req, res) {
+app.get('/examples/estimatePi/estimatePiWorker.js', function (req, res) {
     console.log("estimatePiWorker.js from network ");
     console.log(EXPLANATION);
     setTimeout(function () {
@@ -76,7 +76,14 @@ app.use(makeSendFileAvailable);
 app.listen(PORT, function () {
     console.log(
         `Example app listening on port ${PORT}! ,
-    open
-http://localhost:${PORT}/example/example.html`
+    open one of
+http://localhost:${PORT}/examples/estimatePi/example.html
+
+http://localhost:${PORT}/examples/basic/worka.html
+http://localhost:${PORT}/examples/basic/workaRunTimeError.html
+http://localhost:${PORT}/examples/basic/workaSyntaxError.html
+
+http://localhost:${PORT}/examples/arrayHelpers/mapParallel.html
+`
     );
 });

@@ -1,6 +1,6 @@
-import { mapParallel } from "../source/arrayParallel.js";
+import { mapParallel } from "../../source/arrayParallel.js";
 
-import { estimatePi } from "./estimatePi.js";
+import { estimatePi } from "../estimatePi/estimatePi.js";
 
 
 const precisionFromPrecisionLevel = function (precisionLevel) {

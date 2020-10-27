@@ -6,17 +6,16 @@
   "type": "module",
   "main": "source/worka.js",
   "scripts": {
-    "lint-fix": "eslint --ignore-path .gitignore --fix source example example-deno example-node",
-    "lint": "eslint --ignore-path .gitignore source example example-deno example-node",
+    "lint-fix": "eslint --ignore-path .gitignore --fix source examples",
+    "lint": "eslint --ignore-path .gitignore source examples",
     "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka.iife.js",
     "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka.cjs",
     "bundle": "npm run build-browser && npm run build-node",
     "prepublishOnly": "npm run bundle",
-    "try": "node example/index.js 8080",
-    "prepare-node-example": "node source/decorateWorker.js example-node/sort.js example-node/sort_worka.js",
-    "prepare-deno-example": "node source/decorateWorker.js example-node/sort.js sort_worka.js",
-    "node-example": "node example-node/file_usage.js",
-    "deno-example": "deno run --allow-read example-deno/file_usage.js "
+    "try": "node examples/index.js 8080",
+    "prepare-example": "node source/decorateWorker.js examples/node/sort.js sort_worka.js",
+    "node-example": "node examples/node/file_usage.js",
+    "deno-example": "deno run --allow-read examples/deno/file_usage.js"
   },
   "dependencies": {},
   "devDependencies": {

@@ -8,27 +8,32 @@
         <p>Open console. If nothing show up try with a browser that supports modules. And launch form localhost not file system</p>
         <script type="module">
 
-import { registerWorker, FUNCTION, work } from "../source/worka.js";
+import { registerWorker, STRING, work } from "../source/worka.js";
 
-const sort = function (array) {
-    array.sorttttttttt(); // run time error will trigger the catch
+
+// triggers a syntax error, which needs to be fixed (not catched)
+const sort = `fffffffffffunction (array) {
+    array.sortt(function (a, b) {
+        return a - b;
+    });
     return array;
-};
+}`;
 
 registerWorker({
-    name: `sort`,
+    name: "sort",
     resource: sort,
-    loadMode: FUNCTION
+    loadMode: STRING
 });
 
 work({name: `sort`, input: [1, 2, 3, -8, -5, 2, 3, 45, 5]}).then(function (result) {
     console.log(result);
-    console.log(`after success`);
+    console.log("after success");
 }).catch(function (error) {
-    console.log(`in the catch`);
+    console.log("in the catch");
     console.error(error);
 });
 
+console.log("3");
     </script>
     </body>
 </html>

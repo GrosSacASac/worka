@@ -1,5 +1,8 @@
 # worka
 
+## Platforms
+
+Web, Deno
 
 ## Why
 
