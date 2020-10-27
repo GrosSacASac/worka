@@ -642,15 +642,14 @@ https://github.com/pmav/web-workers/blob/master/assets-web-workers/javascript-we
 
 ### Some tests
 
-Look at the /example folder
+Look at the /examples folder
 
 Steps with npm cli:
 
- * cd example
+ * cd examples
  * npm install
  * cd ..
- * node example/index.js 8080
- * open http://localhost:8080/example/example.html
+ * npm run  try
 
 There you can compare
 
