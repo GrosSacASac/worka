@@ -1,5 +1,9 @@
 # Changelog
 
+## 11.0.0
+
+ * decorateWorker requires Node 14+
+
 ## 10.1.0
 
  * Functions provided to registerWorker can also return Promises
