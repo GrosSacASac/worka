@@ -243,7 +243,7 @@ Partial Default
 ```
 
 
-Pure functions are stateless. Function that change variables other than the return value are statefull (Worker that do not use transferable, have a copy of the input, not the input itself, which means a top level function inside a worker can change the __copied__ input and still be pure). Statefull component will never auto split into multiple workers. Before using statefull workers everywhere, consider moving the state up; moving the state in the main thread, mutate it only there, and providing it to the worker each time alongside the regular input. There is no need to set `initialize`. To provide a statefull function use `stateless: false` and the following format:
+Pure functions are stateless. Function that change variables other than the return value are stateful (Worker that do not use transferable, have a copy of the input, not the input itself, which means a top level function inside a worker can change the __copied__ input and still be pure). Stateful component will never auto split into multiple workers. Before using stateful workers everywhere, consider moving the state up; moving the state in the main thread, mutate it only there, and providing it to the worker each time alongside the regular input. There is no need to set `initialize`. To provide a stateful function use `stateless: false` and the following format:
 
 
 ```js
@@ -388,7 +388,7 @@ Partial Default
  * 5+ no effect, slowest first start, lowest memory usage default value
  * 4 worker is preloaded
  * 3 worker is decorated and all the above
- * 2 worker is instanciated and all the above
+ * 2 worker is instantiated and all the above
  * 1 place holder do not use
  * 0 worker is started, and initialization is run and all the above
 
@@ -418,7 +418,7 @@ Partial Default
 Integer `Number` equal or above `1`.
 
 
-By default each registered worker will spawn copies of itself when ever `work()` is called while there is already a worker computing. `max` describes the maximum amount of Web Worker for this registered worker. Do not include this option unless you know exactly why and what you are doing. Statefull worker will not spawn copies of itself by default.
+By default each registered worker will spawn copies of itself when ever `work()` is called while there is already a worker computing. `max` describes the maximum amount of Web Worker for this registered worker. Do not include this option unless you know exactly why and what you are doing. Stateful worker will not spawn copies of itself by default.
 
 
 Partial Default
@@ -599,7 +599,7 @@ const memoizedWork = promiseMemoize(work);
  * https://github.com/andywer/threads.js
      * Also works for NodeJS
      * Also for non ES6
-     * Transferrables
+     * Transferrable
      * More complex
  * https://github.com/padolsey/operative
      * Falls back to using iframes
@@ -623,7 +623,7 @@ Contributions welcome :)
 
  * report progress system design (streams ?)
  * es5 and old browser support
- * Opt in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
+ * Opt-in for transferable, maybe with [Atomic operations](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
  * Allow asynchronous functions
 
 ### Optimisation ideas
