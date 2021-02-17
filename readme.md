@@ -1,4 +1,4 @@
-# worka
+# [worka](https://github.com/GrosSacASac/worka)
 
 ## Platforms
 
@@ -137,7 +137,7 @@ returns undefined. Immediately registers a worker. Registration is required befo
 Describes the worker. Example:
 
 
-```
+```js
 {
     name: `workerName`,
     resource: myFunction,
@@ -175,7 +175,7 @@ Possible Values: `FUNCTION, STRING, MULTI_FUNCTION FILE`
 Partial Default
 
 
-```
+```js
 {
     loadMode: STRING
 }
@@ -236,7 +236,7 @@ The rest of the options are optional. Jump to [work](#work).
 Partial Default
 
 
-```
+```js
 {
     stateless: true
 }
@@ -286,7 +286,7 @@ To force an initialization phase, use `initialize: true` and use the delayed ini
 Partial Default
 
 
-```
+```js
 {
     initialize: false
 }
@@ -353,7 +353,7 @@ Hope is a number that helps make assumptions about the lifecycle of the worker. 
 Partial Default
 
 
-```
+```js
 {
     hope: 6
 }
@@ -379,7 +379,7 @@ Lazy is a number that helps make assumption about the life cycle of the worker. 
 Partial Default
 
 
-```
+```js
 {
     lazy: 5
 }
@@ -406,7 +406,7 @@ By default there is no time out. The time out timing start just after work(...).
 Partial Default
 
 
-```
+```js
 {
     timeOut: false
 }
@@ -424,7 +424,7 @@ By default each registered worker will spawn copies of itself when ever `work()`
 Partial Default
 
 
-```
+```js
 {
     max: navigator.hardwareConcurrency || 1
 }
@@ -470,7 +470,7 @@ The input that will be provided to the worker. To pass multiple inputs use a con
 
 *Read-only*  Object describing the support matrix for web workers.
 
-```
+```js
 {   
     basic: Boolean
     transferrables: undefined // for now
