@@ -11,7 +11,7 @@ console.log(pathToFileURL(`${__dirname}/../../sort_worka.js`).href);
 registerWorker({
     name: `sort`,
     /* Error [ERR_UNSUPPORTED_ESM_URL_SCHEME]: Only file and data URLs are supported by the default ESM loader. On Windows, absolute paths must be valid file:// URLs. Received protocol 'c:'  */    
-    resource: pathToFileURL(`${__dirname}/../../sort_worka.js`).href,
+    resource: pathToFileURL(`${__dirname}/../../sort_worka.js`),
     
     /* TypeError [ERR_INVALID_FILE_URL_PATH]: File URL path must be absolute */
     // resource: `file:///C/files/worka/sort_worka.js`,

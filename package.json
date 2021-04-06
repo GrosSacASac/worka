@@ -22,8 +22,7 @@
     "eslint": "^7.17.0",
     "eslint-config-red": "^1.8.1",
     "filesac": "^13.0.0",
-    "rollup": "^2.32.1",
-    "web-worker": "^1.0.0"
+    "rollup": "^2.32.1"
   },
   "eslintConfig": {
     "extends": [

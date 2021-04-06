@@ -247,11 +247,11 @@ const afterWorkerErrored = function (worker) {
 
 const addEventListenerToWorker = function (worker) {
     const { instance } = worker;
-    instance.addEventListener(`message`, function (event) {
+    instance.on(`message`, function (event) {
         const message = event.data;
         const [resolve, reject] = worker.resolveRejectQueue.shift();
-        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
-            const { result } = message;
+        if (Object.prototype.hasOwnProperty.call(event, `result`)) {
+            const { result } = event;
             resolve(result);
             afterWorkerFinished(worker);
         } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
