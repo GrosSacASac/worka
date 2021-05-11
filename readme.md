@@ -565,7 +565,7 @@ const promise = Promise.race([
 Memoize is not included by default for maximum flexibility. It is possible to memoize the resolution value from the worker with an external library like [promise-memoize](https://github.com/nodeca/promise-memoize). Learn about the limitations of memoization first.
 
 
-```npm install promise-memoize```
+`npm install promise-memoize`
 
 
 ```js
