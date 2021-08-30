@@ -13,9 +13,12 @@ const [, , input, output] = process.argv;
     };
     decorateWorker(worker);
 
-    // or use > in cli
-    await writeTextInFile(output, worker.decoratedAsString);
-    console.log(worker.decoratedAsString);
+    if (output) {
+        await writeTextInFile(output, worker.decoratedAsString);
+    } else {
+        // or use > in cli
+        console.log(worker.decoratedAsString);
+    }
 }());
 
 

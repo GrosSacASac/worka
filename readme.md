@@ -169,7 +169,7 @@ Any value that can help build the worker. Must be in sync with `loadMode`. For e
 #### loadMode (required)
 
 
-Possible Values: `FUNCTION, STRING, MULTI_FUNCTION FILE`
+Possible Values: `FUNCTION, STRING, MULTI_FUNCTION, FILE`
 
 
 Partial Default
