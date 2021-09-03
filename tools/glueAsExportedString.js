@@ -23,8 +23,8 @@ codeToExportAsString.map(({source, destination, exportName}) => {
     const glueCode = fs.readFileSync(source, { encoding: "utf8"});
     // we could minify the code
     
-    const asExportedJsString = `export {exportName};
-const exportName = ${JSON.stringify(glueCode)}`;
+    const asExportedJsString = `export {${exportName}};
+const ${exportName} = ${JSON.stringify(glueCode)}`;
     fs.writeFileSync(destination, asExportedJsString);
 });
 
