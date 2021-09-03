@@ -212,7 +212,7 @@ const testWithoutWorker = function () {
 
 const testWithRemoteServer = function () {
     const aggregates = {
-        title: `With Remote Server`,
+        title: `With Remote Server (delay 50ms)`,
         totalComputationTime: 0,
         meanTime: 0,
         totalTime: 0,
