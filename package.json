@@ -1,6 +1,6 @@
 {
   "name": "worka",
-  "version": "11.0.3",
+  "version": "11.0.4",
   "description": "web workers results in promises",
   "license": "BSL-1.0",
   "type": "module",
