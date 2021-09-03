@@ -1,4 +1,3 @@
-/*global doWork*/
 /*eslint-env worker*/
 self.addEventListener(`error`, function (errorEvent) {
     errorEvent.preventDefault();
