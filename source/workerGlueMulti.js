@@ -5,11 +5,11 @@ self.addEventListener(`message`, async function(event) {
     if (!Object.prototype.hasOwnProperty.call(message, `input`)) {
         return;
     }
-    const input = message.input;
-    const functionName = message.functionName;
+    const {input} = message;
+    const {functionName} = message;
     if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
         self.postMessage({
-            error: `\${functionName} not found`
+            error: `\${functionName} not found`,
         });
         return;
     }
