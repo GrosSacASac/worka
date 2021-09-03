@@ -14,6 +14,10 @@ export {
     TIME_OUT_ERROR,
 };
 
+import { workerGlueMulti } from "../built/workerGlueMultiString.js";
+import { workerGlue } from "../built/workerGlueString.js";
+import { workerErrorHandler as errorHandler} from "../built/workerErrorHandlerString.js";
+
 const workerSupport = {
     basic: (typeof Worker === `function`),
     // transferables: undefined
@@ -95,18 +99,7 @@ const loadWorker = function (worker) {
 };
 
 /* convert to String because errorEvent can not be cloned*/
-const errorHandler = `self.addEventListener(\`error\`, function (errorEvent) {
-    errorEvent.preventDefault();
-    let asString;
-    if (errorEvent.message) {
-        asString = errorEvent.message;
-    } else {
-        asString = String(errorEvent);
-    }
-    self.postMessage({
-        error: asString,
-    });
-});`;
+
 const decorateWorker = function (worker) {
     const { originalAsString } = worker;
     const { loadMode } = worker;
@@ -116,25 +109,7 @@ const decorateWorker = function (worker) {
 ${USE_STRICT}
 ${errorHandler}
 const functions = ${originalAsString}();
-self.addEventListener(\`message\`, async function(event) {
-    const message = event.data;
-    if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
-        return;
-    }
-    const input = message.input;
-    const functionName = message.functionName;
-    if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
-        self.postMessage({
-            error: \`\${functionName} not found\`
-        });
-        return;
-    }
-
-    const result = await functions[functionName](input);
-    self.postMessage({
-        result,
-    });
-});
+${workerGlueMulti}
         `;
 
     } else {
@@ -148,17 +123,7 @@ self.addEventListener(\`message\`, async function(event) {
 ${USE_STRICT}
 ${errorHandler}
 const doWork = ${originalAsString}${initializeSuffix};
-self.addEventListener(\`message\`, async function(event) {
-    const message = event.data;
-    if (!Object.prototype.hasOwnProperty.call(message, \`input\`)) {
-        return; // only waking up
-    }
-    const input = message.input;
-    const result = await doWork(input);
-    self.postMessage({
-        result,
-    });
-});`;
+${workerGlue}`;
     }
     worker.decoratedAsString = decoratedAsString;
     worker.decorated = true;

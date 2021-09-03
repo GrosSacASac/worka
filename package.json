@@ -8,9 +8,10 @@
   "scripts": {
     "lint-fix": "eslint --ignore-path .gitignore --fix source examples",
     "lint": "eslint --ignore-path .gitignore source examples",
+    "build-glue-exports": "node tools/glueAsExportedString.js",
     "build-browser": "rollup source/worka.js --output.format iife --output.name \"worka\" --output.file built/worka.iife.js",
     "build-node": "rollup source/worka.js --output.format cjs --output.name \"worka\" --output.file built/worka.cjs",
-    "bundle": "npm run build-browser && npm run build-node",
+    "bundle": "npm run build-glue-exports && npm run build-browser && npm run build-node",
     "prepublishOnly": "npm run bundle",
     "try": "node examples/index.js 8080",
     "prepare-example": "node source/decorateWorker.js examples/node/sort.js sort_worka.js",
