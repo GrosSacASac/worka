@@ -1,6 +1,6 @@
-import { decorateWorker } from "./worka.js";
-import fsPromises from "fs/promises";
+import fsPromises from "node:fs/promises";
 import { writeTextInFile } from "filesac";
+import { decorateWorker } from "./worka.js";
 
 const [, , input, output] = process.argv;
 

@@ -1,9 +1,9 @@
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 import polka from "polka";
+import serveStatic from "serve-static";
 import { estimatePi } from "./estimatePi/estimatePi.js";
 import { makeSendFileAvailable } from "./sendFile.js";
-import serveStatic from "serve-static";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 
 const __filename = fileURLToPath(import.meta.url);

@@ -1,5 +1,4 @@
 import { mapParallel } from "../../source/arrayParallel.js";
-
 import { estimatePi } from "../estimatePi/estimatePi.js";
 
 

@@ -1,5 +1,7 @@
 export { makeSendFileAvailable };
-import { createReadStream } from "fs";
+
+import { createReadStream } from "node:fs";
+
 
 // probably not the right way to do it
 // todo

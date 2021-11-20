@@ -1,7 +1,9 @@
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { dirname } from "node:path";
 import "./patchNodeWorker.js";
 import { registerWorker, FILE, NO_SUPPORT_ERROR, TIME_OUT_ERROR, work } from "../../source/worka.js";
-import { fileURLToPath, pathToFileURL } from "url";
-import { dirname } from "path";
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
