@@ -1,5 +1,9 @@
 # Changelog
 
+## 12.0.0
+
+ * use `Object.hasOwn` which requires ES2022 or a polyfill
+
 ## 11.0.0
 
  * decorateWorker requires Node 14+
