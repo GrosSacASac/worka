@@ -56,7 +56,7 @@ d.functions.webWorkerPreloaded = function () {
     const worker = new Worker(estimatePiWorkerURL);
     worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+        if (Object.hasOwn(message, `result`)) {
             const { result } = message;
             const endTime = getReferenceTime();
             const duration = endTime - startTime;
@@ -81,7 +81,7 @@ d.functions.webWorkerNoCache = function () {
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL_NO_CACHE);
     worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+        if (Object.hasOwn(message, `result`)) {
 
             const { result } = message;
             const endTime = getReferenceTime();
@@ -107,7 +107,7 @@ d.functions.webWorkerWithCache = function () {
     const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
     worker.addEventListener(`message`, function (event) {
         const message = event.data;
-        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+        if (Object.hasOwn(message, `result`)) {
 
             const { result } = message;
             const endTime = getReferenceTime();
@@ -266,7 +266,7 @@ const testWithRawWorker = function () {
             const worker = new Worker(ESTIMATEPI_RAW_WORKER_URL);
             worker.addEventListener(`message`, function (event) {
                 const message = event.data;
-                if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+                if (Object.hasOwn(message, `result`)) {
                     const piEstimation = message.result;
                     const endTime = getReferenceTime();
                     const duration = endTime - startTime;

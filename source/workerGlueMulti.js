@@ -2,12 +2,12 @@
 /*eslint-env worker*/
 self.addEventListener(`message`, async function(event) {
     const message = event.data;
-    if (!Object.prototype.hasOwnProperty.call(message, `input`)) {
+    if (!Object.hasOwn(message, `input`)) {
         return;
     }
     const {input} = message;
     const {functionName} = message;
-    if (!Object.prototype.hasOwnProperty.call(functions, functionName)) {
+    if (!Object.hasOwn(functions, functionName)) {
         self.postMessage({
             error: `\${functionName} not found`,
         });

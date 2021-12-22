@@ -215,11 +215,11 @@ const addEventListenerToWorker = function (worker) {
     instance.addEventListener(`message`, function (event) {
         const message = event.data;
         const [resolve, reject] = worker.resolveRejectQueue.shift();
-        if (Object.prototype.hasOwnProperty.call(message, `result`)) {
+        if (Object.hasOwn(message, `result`)) {
             const { result } = message;
             resolve(result);
             afterWorkerFinished(worker);
-        } else if (Object.prototype.hasOwnProperty.call(message, `error`)) {
+        } else if (Object.hasOwn(message, `error`)) {
             const { error } = message;
             reject(error);
             afterWorkerErrored(worker);
@@ -343,10 +343,10 @@ const work = function ({ name, functionName, input, workerStore = workers, force
         return Promise.reject(NO_SUPPORT_ERROR);
     }
     let preparedInput;
-    if (!Object.prototype.hasOwnProperty.call(workerStore, name)) {
+    if (!Object.hasOwn(workerStore, name)) {
         return Promise.reject(`${name} not registered`);
     }
-    if (Object.prototype.hasOwnProperty.call(input, `input`)) {
+    if (Object.hasOwn(input, `input`)) {
         // already prepared
         preparedInput = input;
     } else {

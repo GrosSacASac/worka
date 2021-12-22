@@ -23,7 +23,7 @@ const estimatePi = function (precision) {
 
 self.addEventListener(`message`, function (event) {
     const message = event.data;
-    if (!Object.prototype.hasOwnProperty.call(message, `action`)) {
+    if (!Object.hasOwn(message, `action`)) {
         return;
     }
     const { action } = message;

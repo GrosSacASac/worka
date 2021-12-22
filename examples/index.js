@@ -23,7 +23,7 @@ const app = polka();
 
 app.get(`/examples/estimatePi`, function (req, res) {
     const {query} = req;
-    if (!Object.prototype.hasOwnProperty.call(query, `input`)) {
+    if (!Object.hasOwn(query, `input`)) {
         res.status(400);
         res.end();
         return;
