@@ -19,10 +19,10 @@
     "deno-example": "deno run --allow-read examples/deno/file_usage.js"
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-red": "^1.8.2",
+    "eslint": "^8.5.0",
+    "eslint-config-red": "^1.9.0",
     "filesac": "^13.0.0",
-    "rollup": "^2.58.0"
+    "rollup": "^2.61.1"
   },
   "eslintConfig": {
     "extends": [
